@@ -9,6 +9,7 @@
         android:id="@+id/tip"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:textColor="@color/tipColor"
         android:textSize="24sp" />
 </LinearLayout>

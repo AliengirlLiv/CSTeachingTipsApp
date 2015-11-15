@@ -1,34 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:showIn="@layout/activity_main" tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:showIn="@layout/activity_main">
 
 
-    <TextView
-        android:id="@+id/tip_location"
-        android:text="Random tip!"
+    <com.andtinder.view.CardContainer
+        android:id="@+id/tips"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        />
+        android:layout_weight="1"/>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height= "0dp"
-        android:layout_weight="1"
         android:id="@+id/swipe_button"
-        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginLeft="20dp"
-        android:text="Click to swipe"
-        />
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:text="Click to swipe" />
 
 
 </LinearLayout>
 
-<!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
