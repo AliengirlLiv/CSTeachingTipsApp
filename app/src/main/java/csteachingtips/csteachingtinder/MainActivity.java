@@ -10,13 +10,10 @@ import android.widget.Button;
 
 import com.andtinder.view.CardContainer;
 
-import java.util.Random;
-
 
 public class MainActivity extends AppCompatActivity  /*implements View.OnClickListener*/ {
 
     Button swipeButton;
-    Random rand = new Random();
     CardContainer tipContainer;
     TipStackAdapter adapter;
     WebView webView;
