@@ -41,6 +41,12 @@ public class MainActivity extends AppCompatActivity  /*implements View.OnClickLi
                             @Override
                             public void onReceiveValue(String tip) {
                                 adapter.add(new Tip(tip));
+
+                                // Tips don't seem to be moveable if the adapter is not reset
+                                // after they are added. We _should_ be able to set
+                                // the adapter once and not have to worry about it.
+                                // We should probably look into this eventually,
+                                // but it doesn't seem to pose a threat yet.
                                 tipContainer.setAdapter(adapter);
                                 if (adapter.getCount() < 5) {
                                     view.reload();
