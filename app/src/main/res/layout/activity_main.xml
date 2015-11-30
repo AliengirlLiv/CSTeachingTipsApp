@@ -6,12 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/light_green"
     tools:showIn="@layout/activity_main" tools:context=".MainActivity">
 
 
     <TextView
         android:id="@+id/tip_location"
         android:text="Random tip!"
+        android:textSize="30sp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -29,6 +31,19 @@
         />
 
 
+    <TextView
+        android:id="@+id/instructions"
+        android:text="@string/instruction"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        />
+
+
 </LinearLayout>
 
-<!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+
+
+
+    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->

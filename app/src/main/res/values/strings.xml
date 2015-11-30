@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CSTeachingTinder</string>
+    <string name="instruction">Swipe right to Like a tip. Otherwise, swipe left.</string>
 </resources>
