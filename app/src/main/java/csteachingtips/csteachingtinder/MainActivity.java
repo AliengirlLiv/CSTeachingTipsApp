@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.andtinder.model.CardModel;
@@ -19,9 +18,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements CardModel.OnCardDimissedListener /* View.OnClickListener*/ {
 
-    Button swipeButton;
     Random rand= new Random();
-    TextView tip;
     TextView instructions;
     ActionBar actionBar;
     CardContainer tipContainer;
@@ -36,23 +33,16 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Create an action bar with our logo and the title "CS Teaching Tips"
+        //Create an action bar with our logo
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setTitle("CS Teaching Tips!!!");
-        //actionBar.setIcon(R.mipmap.ic_launcher);
-        actionBar.setIcon(R.drawable.logo_best);
-        //actionBar.setDisplayUseLogoEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1"))); //#3E9865
-        tip = (TextView) findViewById(R.id.tip_location);
+        actionBar.setIcon(R.drawable.combined_logo);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1")));
         instructions = (TextView) findViewById(R.id.instructions);
         activity = this;
 
         adapter = new TipStackAdapter(this);
         tipContainer = (CardContainer) findViewById(R.id.tips);
-        //tipContainer.setAdapter(adapter);
-        swipeButton = (Button) findViewById(R.id.swipe_button);
-        //swipeButton.setOnClickListener(this);
 
         webView = new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);

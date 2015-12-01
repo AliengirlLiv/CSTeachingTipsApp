@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
         <activity android:name=".MainActivity"
-            android:label="CS Teaching Tips">
+            android:label="">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

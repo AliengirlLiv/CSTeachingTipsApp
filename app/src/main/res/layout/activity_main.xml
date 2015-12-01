@@ -9,36 +9,18 @@
     tools:showIn="@layout/activity_main"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tip_location"
-        android:text="Random tip!"
-        android:textSize="30sp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"/>
-
     <com.andtinder.view.CardContainer
         android:id="@+id/tips"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"/>
 
-    <Button
-        android:id="@+id/swipe_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_weight="1"
-        android:text="Click to swipe" />
-
-
     <TextView
         android:id="@+id/instructions"
         android:text="@string/instruction"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight=".5"
         android:gravity="center"
         />
 
