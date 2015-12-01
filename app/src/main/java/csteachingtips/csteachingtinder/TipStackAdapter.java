@@ -40,12 +40,22 @@ public class TipStackAdapter extends CardStackAdapter {
         //notifyDataSetChanged();
     }
 
+    /////    @Override
+ /////   public CardModel pop() {
+    /////       CardModel model = mData.remove(getCount() - 1);
+    /////       //notifyDataSetChanged();
+    /////      return model;
+    /////  }
+
+
     @Override
     public CardModel pop() {
-        CardModel model = mData.remove(getCount() - 1);
-        //notifyDataSetChanged();
+        CardModel model = mData.remove(0);
         return model;
     }
+
+
+
 
     @Override
     public CardModel getCardModel(int position) {
@@ -56,4 +66,18 @@ public class TipStackAdapter extends CardStackAdapter {
     public int getCount() {
         return mData.size();
     }
+
+    public Tip getCurrTip() {
+        return (Tip) mData.get(0);
+    }
+
+//Take out later; currently useful for debugging
+    public void print() {
+        for (CardModel cm : mData) {
+            System.out.println(cm.getDescription());
+        }
+    }
+
 }
+
+

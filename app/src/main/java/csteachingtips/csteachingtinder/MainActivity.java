@@ -17,10 +17,11 @@ import android.widget.TextView;
 import com.andtinder.model.CardModel;
 import com.andtinder.view.CardContainer;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 
-public class MainActivity extends AppCompatActivity implements CardModel.OnCardDimissedListener, View.OnClickListener /* View.OnClickListener*/ {
+public class MainActivity extends AppCompatActivity implements CardModel.OnCardDimissedListener, View.OnClickListener {
 
     Random rand= new Random();
     TextView instructions;
@@ -30,6 +31,10 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     WebView webView;
     MainActivity activity;
     ImageButton helpButton;
+    ArrayList<Tip> tipsSoFar; //All the tips we've seen so far; Depending on how long we need to store
+   // info, we could only save these for one session, save these forever, save them for a certain amount
+    //of time, or even get rid of tipsSoFar all together if we can update to the site in real time.
+
 
     static final String randomTipUrl = "http://csteachingtips.org/random-tip";
 
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         activity = this;
         adapter = new TipStackAdapter(this);
         tipContainer = (CardContainer) findViewById(R.id.tips);
+        tipsSoFar = new ArrayList<Tip>();
 
         webView = new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -69,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
                         new ValueCallback<String>() {
                             @Override
                             public void onReceiveValue(String jsonTip) {
-                                adapter.add(new Tip(removeQuotes(jsonTip), activity));
-
+                                Tip newTip = new Tip(removeQuotes(jsonTip), activity);
+                                adapter.add(newTip);
                                 // Tips don't seem to be moveable if the adapter is not re-set
                                 // after they are added. We _should_ be able to set
                                 // the adapter once and not have to worry about it.
@@ -92,18 +98,17 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         return jsonString.substring(1, jsonString.length() - 1);
     }
 
-    // onDislike*
-    @Override
-    public void onLike() {
-        adapter.pop();
-        //webView.loadUrl(randomTipUrl);
-    }
+
+
 
 
     //Open the help popup when you click on the info button
     @Override
     public void onClick(View v) {
         showSimplePopUp();
+        //printTips();
+        //System.out.println("_______________________________________");    <== These lines are useful for debugging.
+        //adapter.print();
     }
 
 
@@ -123,13 +128,73 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     }
 
 
+    Tip recordNewTip(Tip newTip) {
+     //Loop through previously created tips, see if this tip is already there.  If not, add it.
+        for (int i = 0; i < tipsSoFar.size(); i++) {
+            if (newTip.equals(tipsSoFar.get(i))) {
+                return tipsSoFar.get(i);             //Returns the matching tip (if there is one).
+            }
+        }
+        tipsSoFar.add(newTip);
+        return newTip;  //If there's no match, add the current tip to the list and return it.
+
+    }
 
 
 
-    // onLike*
+//Save tip in list.  Increment both # of likes and # of views.
+    void likeTip(Tip currTip) {
+        Tip tipInList = recordNewTip(currTip);
+        tipInList.likeTip();
+    }
+
+
+    //Save tip in list.  Increment only # of views.
+    void dislikeTip(Tip currTip) {
+        System.out.println("I DON'T LIKE THIS TIP!!!!!");
+        Tip tipInList = recordNewTip(currTip);
+        tipInList.dislikeTip();
+    }
+
+
+
+//Earlier, this was onLike.  I changed it so the swipe direction would be right.
+    //To change it, just make this method onLike'.
+    // onDislike*
     @Override
     public void onDislike() {
+        likeTip(adapter.getCurrTip());
         adapter.pop();
         //webView.loadUrl(randomTipUrl);
     }
+
+
+    //Earlier, this was onDisike.  I changed it so the swipe direction would be right.
+    //To change it, just make this method onDisike'.
+    // onLike*
+    @Override
+    public void onLike() {
+        dislikeTip(adapter.getCurrTip());
+        adapter.pop();
+        //webView.loadUrl(randomTipUrl);
+    }
+
+
+
+
+    //Get rid of this later; this is just helpful for now in seeing what elements tipsSoFar holds.
+    void printTips() {
+        for (Tip t : tipsSoFar) {
+            System.out.print(t.getDescription());
+            System.out.print("  -  ");
+            System.out.print(t.getLikes());
+            System.out.print("/");
+            System.out.println(t.getViews());
+            System.out.println();
+        }
+    }
+
+
+
+
 }
