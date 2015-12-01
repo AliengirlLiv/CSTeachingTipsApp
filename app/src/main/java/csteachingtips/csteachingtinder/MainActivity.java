@@ -1,13 +1,17 @@
 package csteachingtips.csteachingtinder;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.andtinder.model.CardModel;
@@ -16,15 +20,16 @@ import com.andtinder.view.CardContainer;
 import java.util.Random;
 
 
-public class MainActivity extends AppCompatActivity implements CardModel.OnCardDimissedListener /* View.OnClickListener*/ {
+public class MainActivity extends AppCompatActivity implements CardModel.OnCardDimissedListener, View.OnClickListener /* View.OnClickListener*/ {
 
     Random rand= new Random();
     TextView instructions;
-    ActionBar actionBar;
+    ///ActionBar actionBar;
     CardContainer tipContainer;
     TipStackAdapter adapter;
     WebView webView;
     MainActivity activity;
+    ImageButton helpButton;
 
     static final String randomTipUrl = "http://csteachingtips.org/random-tip";
 
@@ -38,9 +43,15 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setIcon(R.drawable.combined_logo);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1")));
-        instructions = (TextView) findViewById(R.id.instructions);
-        activity = this;
 
+        //Create the help button in the top right corner.
+        helpButton = (ImageButton) findViewById(R.id.help_button);
+        helpButton.setOnClickListener(this);
+
+        //Create the line of text with the instructions on the bottom of the screen.
+        instructions = (TextView) findViewById(R.id.instructions);
+
+        activity = this;
         adapter = new TipStackAdapter(this);
         tipContainer = (CardContainer) findViewById(R.id.tips);
 
@@ -87,6 +98,33 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         adapter.pop();
         //webView.loadUrl(randomTipUrl);
     }
+
+
+    //Open the help popup when you click on the info button
+    @Override
+    public void onClick(View v) {
+        showSimplePopUp();
+    }
+
+
+    //Popup opens; closes when the user clicks the "Close" button
+    private void showSimplePopUp() {
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
+        helpBuilder.setTitle("About This App");
+        helpBuilder.setMessage("Insert brilliant help message.\nTalk about how the app works, the purpose behind the app, and so on.  Make this app cool!");
+        helpBuilder.setPositiveButton("Close",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whatever) {
+                        // Just close the dialog
+                    }
+                });
+        AlertDialog helpDialog = helpBuilder.create();
+        helpDialog.show();
+    }
+
+
+
+
 
     // onLike*
     @Override

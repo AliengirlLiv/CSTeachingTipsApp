@@ -9,6 +9,29 @@
     tools:showIn="@layout/activity_main"
     tools:context=".MainActivity">
 
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent" >
+
+        <ImageButton android:id="@+id/help_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:adjustViewBounds="true"
+            android:maxWidth="20dp"
+            android:maxHeight="20dp"
+            android:scaleType="fitCenter"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/info" />
+
+
+    </RelativeLayout>
+
     <com.andtinder.view.CardContainer
         android:id="@+id/tips"
         android:layout_width="match_parent"
@@ -29,3 +52,6 @@
 
 
     <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+
+
+
