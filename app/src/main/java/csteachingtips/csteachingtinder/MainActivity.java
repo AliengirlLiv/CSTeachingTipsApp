@@ -9,7 +9,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -40,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     ArrayList<String> tipsSoFar; //All the tips we've seen so far; Depending on how long we need to store
    // info, we could only save these for one session, save these forever, save them for a certain amount
     //of time, or even get rid of tipsSoFar all together if we can update to the site in real time.
+    int tipsLeft = 5; //Currently, the app loads 5 tips to start, then doesn't load any more.  I added a
+    //to load new tips when the tips currently displayed run out.  Not sure if this is the best way to go
+    //about it.  It would probably be ideal if a new tip loaded at the back after each swipe.
 
 
     static final String randomTipUrl = "http://csteachingtips.org/random-tip";
@@ -68,17 +73,48 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         viewsSoFar = new ArrayList<Integer>();
         likesSoFar = new ArrayList<Integer>();
 
-
-        activity = this;
-        adapter = new TipStackAdapter(this);
-        tipContainer = (CardContainer) findViewById(R.id.tips);
-
+        loadTips();
     }
 
 
 
     void loadTips() {
+        System.out.println("LOADING TIPS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
+        activity = this;
+        adapter = new TipStackAdapter(this);
+        tipContainer = (CardContainer) findViewById(R.id.tips);
+        webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(final WebView view, String url) {
+
+                // Inject Javascript to extract tip
+                view.evaluateJavascript(
+                        "var div = document.createElement('div');"
+                                + "div.innerHTML = document.getElementsByClassName('tipspace')[0].innerHTML;"
+                                + "div.textContent.trim() || div.innerText.trim() || '';",
+                        new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String jsonTip) {
+                                Tip newTip = new Tip(removeQuotes(jsonTip), activity);
+                                adapter.add(newTip);
+                                // Tips don't seem to be moveable if the adapter is not re-set
+                                // after they are added. We _should_ be able to set
+                                // the adapter once and not have to worry about it.
+                                // Setting the adapter after a tip has been removed
+                                // seems to put the tip back on top of the stack,
+                                // which is very much undesirable.
+                                tipContainer.setAdapter(adapter);
+                                if (adapter.getCount() < 5) {
+                                    view.reload();
+                                }
+                            }
+                        });
+            }
+        });
+        webView.loadUrl(randomTipUrl);
     }
 
 
@@ -216,6 +252,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         recordTip(adapter.getCurrTip(), 0);
         adapter.pop();
         //webView.loadUrl(randomTipUrl);
+        tipsLeft--;
+        checkReload();
     }
 
 
@@ -225,7 +263,24 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         recordTip(adapter.getCurrTip(), 1);
         adapter.pop();
         //webView.loadUrl(randomTipUrl);
+        tipsLeft--;
+        checkReload();
     }
+
+
+
+    void checkReload() {
+        System.out.print("Tips Left:");
+        System.out.println(tipsLeft);
+        if (tipsLeft == 0) {
+            System.out.println("Out of tips!");
+            loadTips();
+            tipsLeft = 5;
+        }
+    }
+
+
+
 
 
 
@@ -261,8 +316,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
 
-
-    //java.lang.NullPointerException: Attempt to invoke interface method 'android.content.SharedPreferences$Editor android.content.SharedPreferences.edit()' on a null object reference
 
 
 
