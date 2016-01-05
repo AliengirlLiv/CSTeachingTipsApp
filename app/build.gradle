@@ -26,4 +26,6 @@ dependencies {
 
     compile 'com.github.kikoso:SwipeableCards:1.1-RELEASE@aar'
 
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    //compile files ('libs/jkl.jar')
 }

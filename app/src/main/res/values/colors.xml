@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="light_green">#E6F5EB</color>
     <color name="tipColor">#58585B</color>
+    <color name="black">#000000</color>
 </resources>
