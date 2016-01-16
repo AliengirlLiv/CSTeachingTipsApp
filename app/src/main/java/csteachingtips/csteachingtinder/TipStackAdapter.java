@@ -59,7 +59,7 @@ public class TipStackAdapter extends CardStackAdapter {
 
     @Override
     public CardModel getCardModel(int position) {
-        return mData.get(position); //This line is causing it to crash!
+        return mData.get(position); //This line is causing it to crash! IDK WHY!
     }
 
     @Override

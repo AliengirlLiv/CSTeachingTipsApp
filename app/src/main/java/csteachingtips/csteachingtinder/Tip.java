@@ -63,21 +63,4 @@ public class Tip extends CardModel implements Comparable<Tip> {
 
 
 
-
-
-/**
-
-
-    //Returns true if the descriptions (i.e. the text of the tip) are the same
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Tip tip = (Tip) o;
-
-        return getDescription().equals(tip.getDescription());
-
-    }*/
-
 }
