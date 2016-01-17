@@ -35,7 +35,36 @@
     </RelativeLayout>
 
 
-    <LinearLayout
+    <com.andtinder.view.CardContainer
+        android:id="@+id/tips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="450dp"
+        android:maxLines = "20"
+        android:scrollbars = "vertical"
+        android:gravity="left"
+        />
+
+
+
+
+    <TextView
+        android:id="@+id/instructions"
+        android:text="@string/instruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".5"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        />
+
+
+</LinearLayout>
+
+
+    <!--
+
+  <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -57,23 +86,6 @@
 
         </LinearLayout>
 
-
-
-    <TextView
-        android:id="@+id/instructions"
-        android:text="@string/instruction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight=".5"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        />
-
-
-</LinearLayout>
-
-
-    <!--
 
      android:minWidth="450dp"
 

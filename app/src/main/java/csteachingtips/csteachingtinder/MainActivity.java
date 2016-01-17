@@ -60,9 +60,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     ArrayList<String> tipsSoFar; //All the tips we've seen so far; Depending on how long we need to store
     // info, we could only save these for one session, save these forever, save them for a certain amount
     //of time, or even get rid of tipsSoFar all together if we can update to the site in real time.
-    int tipsLeft = 5; //Currently, the app loads 5 tips to start, then doesn't load any more.  I added a
-    //to load new tips when the tips currently displayed run out.  Not sure if this is the best way to go
-    //about it.  It would probably be ideal if a new tip loaded at the back after each swipe.
+    int tipsLeft = 5;
     int group = 0; //This is used to specify a single group of 10 tips to be displayed at a time.
     AlertDialog alert;
     TipSorter t;
@@ -164,16 +162,81 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         webView.getSettings().setJavaScriptEnabled(true);
         WebViewClient wvc = new WebViewClient() {
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            /**
+             *  final ValueCallback v = new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String jsonTip) {
+            if (firstOne) {
+            newMainTip = removeQuotes(jsonTip);
+            OnCreate.onPageFinished();
+            } else {
+            Tip newTip = new Tip((newMainTip + "\n" + jsonTip), activity);
+            adapter.add(newTip);
+            tipContainer.setAdapter(adapter);
+            System.out.print("ADAPTER: ");
+            System.out.println(adapter.getCount());
+            if (adapter.getCount() < 5) {
+            System.out.println("TOO FEW METHOD CALLED");
+            webView.reload();
+            }
+            }
+            /// Tip newTip = new Tip(removeQuotes(jsonTip), activity);
+
+            }
+            };
+
+             */
+
+
+
+
+
+
+
+
+
+
+
             @Override
             public void onPageFinished(final WebView myView, String url) {
 
                 System.out.println("PAGE FINISHED METHOD CALLED");
 
                 // Inject Javascript to extract tip
+               // myView.evaluateJavascript(
+                 //       "var tip = document.createElement('tip');"
+                   //             + "tip.innerHTML = document.getElementsByClassName('tipspace')[0].innerHTML;"
+                     //           + "top.textContent.trim() || top.innerText.trim() || '';"
+                        //        + "var body = document.createElement('body');"
+                         //       + "body.innerHTML = document.getElementsByClassName('field-item even')[0].innerHTML;"
+                         //       + "body.textContent.trim() || body.innerText.trim() || '';"
+                         //       + "var div = tip.concat(body)"
+                     //   ,v);
+
+
                 myView.evaluateJavascript(
                         "var div = document.createElement('div');"
-                                + "div.innerHTML = document.getElementsByClassName('tipspace')[0].innerHTML;"
-                                + "div.textContent.trim() || div.innerText.trim() || '';",v);
+                                + "div.innerHTML = (document.getElementsByClassName('tipspace')[0].innerHTML).concat('\\n\\n').concat(document.getElementsByClassName('field-item even')[0].innerHTML);"
+                                + "div.textContent.trim() || div.innerText.trim() || '';",v); //On the line above, if there isn't any body, it gets the 1st tag instead
 
                 ready = true;
             }
@@ -227,10 +290,13 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     //Change weird symbols which don't show up properly in normal text.
     private String fixSpecialCharacters(String s) {
+        System.out.println(s);
         return s.replace("\\u003C", "<")
                 .replace("\\u003E", ">")
-                .replace("\\\"", "\"");
-
+                .replace("\\\"", "\"")
+                .replace("\\n", "\n")
+                .replace("\\u009B", "");
+// \u2022
     }
 
 
