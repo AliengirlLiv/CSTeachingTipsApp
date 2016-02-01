@@ -4,6 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="light_green">#E6F5EB</color>
-    <color name="tipColor">#58585B</color>
+    <color name="tipColor">#F51BEE</color> <!--58585B -->
     <color name="black">#000000</color>
+    <color name="background_pink">#FAD4F1</color>
+    <color name="background_yellow">#FAF0D4</color>
+    <color name="background_green">#D4FADD</color>
+    <color name="background_blue">#D4DEFA</color>
 </resources>

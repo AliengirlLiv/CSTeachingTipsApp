@@ -44,9 +44,9 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements CardModel.OnCardDimissedListener, View.OnClickListener {
 
-    Random rand = new Random();
+
     TextView instructions;
-    CardContainer tipContainer;
+    CardPile tipContainer;
     TipStackAdapter adapter;
     WebView webView;
     MainActivity activity;
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     ArrayList<String> tipsSoFar; //All the tips we've seen so far; Depending on how long we need to store
     // info, we could only save these for one session, save these forever, save them for a certain amount
     //of time, or even get rid of tipsSoFar all together if we can update to the site in real time.
+    ArrayList<String> extendedTipsSoFar;
     int tipsLeft = 5;
     int group = 0; //This is used to specify a single group of 10 tips to be displayed at a time.
     AlertDialog alert;
@@ -101,28 +102,31 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1")));
 
         //Get the screen size, and adjust the size of the text on the bottom to match.
-        Display display = getWindowManager().getDefaultDisplay();
+    /**    Display display = getWindowManager().getDefaultDisplay();
         Point screenSize = new Point();
         display.getSize(screenSize);
         Float instructionSize = (float) (screenSize.x * .045);
+        System.out.print("INSTRUCTION SIZE: ");
+        System.out.println(instructionSize);
         if (instructionSize < 30) {
-            instructionSize = (float) 30;
-        } else if (instructionSize > 60) {
-            instructionSize = (float) 60;
-        }
+            instructionSize = (float) 30;}
+        else if (instructionSize > 35) {
+            instructionSize = (float) 35;
+        }*/
 
 
         //Create the help button in the top right corner.
         helpButton = (ImageButton) findViewById(R.id.help_button);
         helpButton.setOnClickListener(this);
 
-
+/**
         //Create the line of text with the instructions on the bottom of the screen.
         instructions = (TextView) findViewById(R.id.instructions);
         instructions.setTextSize(TypedValue.COMPLEX_UNIT_PX, instructionSize);
-
+*/
         //Update tipsSoFar with the tips saved from previous times.
         tipsSoFar = new ArrayList<String>();
+        extendedTipsSoFar= new ArrayList<String>();
         viewsSoFar = new ArrayList<Integer>();
         likesSoFar = new ArrayList<Integer>();
 
@@ -136,7 +140,13 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         final ValueCallback v = new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String jsonTip) {
-                Tip newTip = new Tip(removeQuotes(jsonTip), activity);
+                System.out.print("JSON TIP!!!!!!!!!!!   ");
+                System.out.println(jsonTip);
+                int index = jsonTip.indexOf("\\n\\n");
+                System.out.println(index);
+                String title = jsonTip.substring(0, index);
+                String description = jsonTip.substring(index + 4);
+                Tip newTip = new Tip(removeQuotes(title, 1), removeQuotes(description, 0), activity);
                 adapter.add(newTip);
                 // Tips don't seem to be moveable if the adapter is not re-set
                 // after they are added. We _should_ be able to set
@@ -157,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
         activity = this;
         adapter = new TipStackAdapter(this);
-        tipContainer = (CardContainer) findViewById(R.id.tips);
+        tipContainer = (CardPile) findViewById(R.id.tips);
         webView = new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
         WebViewClient wvc = new WebViewClient() {
@@ -221,17 +231,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
                 System.out.println("PAGE FINISHED METHOD CALLED");
 
-                // Inject Javascript to extract tip
-               // myView.evaluateJavascript(
-                 //       "var tip = document.createElement('tip');"
-                   //             + "tip.innerHTML = document.getElementsByClassName('tipspace')[0].innerHTML;"
-                     //           + "top.textContent.trim() || top.innerText.trim() || '';"
-                        //        + "var body = document.createElement('body');"
-                         //       + "body.innerHTML = document.getElementsByClassName('field-item even')[0].innerHTML;"
-                         //       + "body.textContent.trim() || body.innerText.trim() || '';"
-                         //       + "var div = tip.concat(body)"
-                     //   ,v);
-
 
                 myView.evaluateJavascript(
                         "var div = document.createElement('div');"
@@ -281,9 +280,9 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
     //Take the quotes off of the start and end of each tip.
-    public String removeQuotes(String jsonString) {
+    public String removeQuotes(String jsonString, int x) {
         jsonString = fixSpecialCharacters(jsonString);
-        return jsonString.substring(1, jsonString.length() - 1);
+        return jsonString.substring(x, jsonString.length() - 1 + x);
     }
 
 
@@ -294,14 +293,13 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         return s.replace("\\u003C", "<")
                 .replace("\\u003E", ">")
                 .replace("\\\"", "\"")
+                .replace("\\\'", "\'")
+                .replace("\\\\", "\\") //Make sure this doesn't happen multiple times
                 .replace("\\n", "\n")
-                .replace("\\u009B", "");
-// \u2022
+                .replace("\\t", "\t")
+                .replace("\\u009B", ""); //This line appeared in the tip which begins: SciGirls Seven tip: “Girls benefit from relationships with role models and mentors.”
+// \u2022 = buller point
     }
-
-
-
-
 
 
 
@@ -323,13 +321,13 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         switch (item.getItemId()) {
             case R.id.view_results:
                 // When you click "View Results," you get a popup with the tips sorted in order of popularity.
-                t = new TipSorter(this, tipsSoFar, likesSoFar, viewsSoFar);
+                t = new TipSorter(this, tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
                 goodTipsPopUp(t);
                 return true;
 
             case R.id.download_results:
                 // When you click "Download Results," it downloads data as a csv.
-                t = new TipSorter(this, tipsSoFar, likesSoFar, viewsSoFar);
+                t = new TipSorter(this, tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
                 saved = true;
                 verifyStoragePermissions(this);
                 downloadMessage(t.newFile(versionNum()));
@@ -383,6 +381,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         SharedPreferences.Editor e = sp.edit();
 
         e.putInt("NumTips", tipsSoFar.size());
+        e.putInt("ETips", extendedTipsSoFar.size());
         e.putBoolean("Saved", saved);
         e.putInt("NumDownloads", numDownloads);
         e.putString("Date", date);
@@ -390,6 +389,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         for (int i = 0; i < tipsSoFar.size(); i++) {
             e.remove("Tip" + i);
             e.putString("Tip" + i, tipsSoFar.get(i));
+            e.remove("ETip" + i);
+            e.putString("ETip" + i, extendedTipsSoFar.get(i));
             e.remove("Like" + i);
             e.putInt("Like" + i, likesSoFar.get(i));
             e.remove("View" + i);
@@ -405,6 +406,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     {
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         tipsSoFar.clear(); //Clear all the tip-storage arrays
+        extendedTipsSoFar.clear();
         likesSoFar.clear();
         viewsSoFar.clear();
         int size = sp.getInt("NumTips", 0); //Find out how many tips there should be
@@ -414,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
         for (int i = 0; i < size; i++) {
             tipsSoFar.add(sp.getString("Tip" + i, null));
+            extendedTipsSoFar.add(sp.getString("ETip" + i, null));
             likesSoFar.add(sp.getInt("Like" + i, 0));
             viewsSoFar.add(sp.getInt("View" + i, 0));     //All tip-storage arrays are now loaded with old data
         }
@@ -428,6 +431,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         sp.edit().clear().apply();
         tipsSoFar = new ArrayList<String>();
+        extendedTipsSoFar= new ArrayList<String>();
         likesSoFar = new ArrayList<Integer>();
         viewsSoFar = new ArrayList<Integer>();
 
@@ -598,6 +602,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     //Find and return the index of a certain tip
     int findTip(String text) {
         //Loop through previously created tips, see if this tip is already there.
+        System.out.println("STARTING!!!");
+        System.out.println(tipsSoFar.size());
         for (int i = 0; i < tipsSoFar.size(); i++) {
             if (text.equals(tipsSoFar.get(i))) {
                 return i;             //Returns the index of the matching tip (if there is one).
@@ -610,10 +616,12 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     //Stores the view and (possibly) like of the current tip in the 3 data storage ArrayLists.
     void recordTip(Tip currTip, int like) {
-        String text = currTip.getDescription();
-        int tipIndex = findTip(text);
+        String body = currTip.getDescription();
+        String title = currTip.getTitle();
+        int tipIndex = findTip(title);
         if (tipIndex == -1) {
-            tipsSoFar.add(text);
+            tipsSoFar.add(title);
+            extendedTipsSoFar.add(body);
             likesSoFar.add(like);
             viewsSoFar.add(1);
         } else {
@@ -676,7 +684,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
             popup.setMessage("There must have been been some problem.  The file couldn't be created.");
         } else {
             popup.setTitle("Download Complete!");
-            String str = "A csv file named " + fileName + " has been saved to your Downloads folder.";
+            String str = "A csv file named " + fileName + " has been saved to the Downloads folder in your phone's internal storage.";
             popup.setMessage(str);
         }
         popup.setPositiveButton("Close",
@@ -770,18 +778,18 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         super.onConfigurationChanged(newConfig);
 
         //Change the text size depending on the current width of the screen
-        Display display = getWindowManager().getDefaultDisplay();
+      /**  Display display = getWindowManager().getDefaultDisplay();
         Point screenSize = new Point();
         display.getSize(screenSize);
         Float instructionSize = (float) (screenSize.x * .045);
         if (instructionSize < 30) {
             instructionSize = (float) 30;
-        } else if (instructionSize > 60) {
-            instructionSize = (float) 60;
+        } else if (instructionSize > 45) {
+            instructionSize = (float) 45;
         }
         //Create the line of text with the instructions on the bottom of the screen.
         instructions.setTextSize(TypedValue.COMPLEX_UNIT_PX, instructionSize);
-    }
+       */    }
 
 
 

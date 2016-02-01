@@ -8,16 +8,22 @@ public class Tip extends CardModel implements Comparable<Tip> {
 
     int views = 0;
     int likes = 0;
+    String longDescription;
 
 
-    public Tip(String description, OnCardDimissedListener listener) {
-        super(null, description, (Drawable) null);
+
+//NEW!!!
+    public Tip(String title, String description, OnCardDimissedListener listener) {
+        super(title, description, (Drawable) null);
         setOnCardDimissedListener(listener);
     }
 
 
-    public Tip(String description, int likes, int views) {
+
+
+    public Tip(String description, String longDescription, int likes, int views) {
         super(null, description, (Drawable) null);
+        this.longDescription = longDescription;
         this.views = views;
         this.likes = likes;
     }
@@ -28,6 +34,10 @@ public class Tip extends CardModel implements Comparable<Tip> {
 
     public int getLikes() {
         return likes;
+    }
+
+    public String getLong() {
+        return longDescription;
     }
 
 

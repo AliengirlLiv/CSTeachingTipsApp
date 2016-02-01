@@ -16,6 +16,7 @@ import java.util.Date;
 public class TipSorter {
     Context context;
     ArrayList<String> tips;
+    ArrayList<String> extendedTips;
     ArrayList<Integer> likes;
     ArrayList<Integer> views;
     Tip[] sortedTips;
@@ -23,9 +24,10 @@ public class TipSorter {
 
 
     //Save the three data storage ArrayLists.
-    public TipSorter(Context context, ArrayList<String> tips, ArrayList<Integer> likes, ArrayList<Integer> views) {
+    public TipSorter(Context context, ArrayList<String> tips, ArrayList<String> extendedTips, ArrayList<Integer> likes, ArrayList<Integer> views) {
         this.context = context;
         this.tips = tips;
+        this.extendedTips = extendedTips;
         this.likes = likes;
         this.views = views;
         sortedTips = new Tip[tips.size()];
@@ -51,7 +53,7 @@ public class TipSorter {
             String myInputText = "";
             for (int i = 0; i < sortedTips.length; i++) {
                 Tip tip = sortedTips[i];
-                String tipText =  tip.getDescription();
+                String tipText =  tip.getTitle() + "," + tip.getDescription();
                 //Take out all weird characters (e.g. smart quotes) b/c they show up wrong in Excel
                 tipText = tipText.replaceAll("[\\u2018\\u2019\\u201b\\u2032]", "'")
                         .replaceAll("[\\u201C\\u201D\\u201e\\u2033]", "\"")
@@ -62,11 +64,29 @@ public class TipSorter {
                         .replace("\\u003C", "<")
                         .replace("\\u003E", ">")
                 ;
+
+
                 //Add quotes at beginning and end, and make quotes within tips double up ("").
                 tipText = "\"" + tipText.replace("\"", "\"\"") + "\"";
+
+
+
+                String tipLong = tip.getLong().replaceAll("[\\u2018\\u2019\\u201b\\u2032]", "'")
+                        .replaceAll("[\\u201C\\u201D\\u201e\\u2033]", "\"")
+                        .replaceAll("[\\u2013\\u2014\\u2015]", "-")
+                        .replaceAll("[\\u2017]", "_")
+                        .replaceAll("[\\u2026]", "...")
+                        .replaceAll("[\\u201a]", ",")
+                        .replace("\\u003C", "<")
+                        .replace("\\u003E", ">")
+                        ;
+
+                //Add quotes at beginning and end, and make quotes within tips double up ("").
+                tipLong = "\"" + tipLong.replace("\"", "\"\"") + "\"";
+
                 int likes = tip.getLikes();
                 int views = tip.getViews();
-                myInputText = myInputText + tipText + "," + likes + "," + views + "\n";
+                myInputText = myInputText + tipText + "," + tipLong + "," + likes + "," + views + "\n";
             }
             fos.write(myInputText.getBytes());
             fos.close();
@@ -86,7 +106,7 @@ public class TipSorter {
     //When there's a tie, the tip with more views wins.
     public void makeTipList() {
         for (int i = 0; i < tips.size(); i++) {
-            sortedTips[i] = new Tip(tips.get(i), likes.get(i), views.get(i));
+            sortedTips[i] = new Tip(tips.get(i), extendedTips.get(i), likes.get(i), views.get(i));
         }
         Arrays.sort(sortedTips);
     }
