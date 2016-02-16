@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Tip Tinder</string>
     <string name="instruction">Swipe right to Like a tip. Otherwise, swipe left.</string>
+    <string name="title_activity_extended_tip">ExtendedTip</string>
 </resources>

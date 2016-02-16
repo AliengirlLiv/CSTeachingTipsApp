@@ -1,12 +1,14 @@
 package csteachingtips.csteachingtinder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -18,9 +20,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class TipStackAdapter extends CardStackAdapter {
+public class TipStackAdapter extends CardStackAdapter implements View.OnClickListener {
 
     protected List<CardModel> mData;
+    Button extendButton;
 
     public TipStackAdapter(Context mContext) {
         super(mContext);
@@ -38,7 +41,11 @@ public class TipStackAdapter extends CardStackAdapter {
         ((TextView) convertView.findViewById(R.id.tip)).setText(model.getTitle()); //If we ever want description, put it in here.
         int[] col = getColor();
         (convertView.findViewById(R.id.tip_container)).setBackgroundColor(col[0]);
-        (convertView.findViewById(R.id.expand)).setBackgroundColor(col[1]);
+        ///(convertView.findViewById(R.id.expand)).setBackgroundColor(col[1]);
+        extendButton = (Button) (convertView.findViewById(R.id.expand));
+        extendButton.setBackgroundColor(col[1]);
+        extendButton.setOnClickListener(this);
+
         return convertView;
     }
 
@@ -68,6 +75,18 @@ public class TipStackAdapter extends CardStackAdapter {
 
     }
 
+
+    public void onClick(View v){
+        Intent intent = new Intent("csteachingtips.csteachingtinder.ExtendedTip");
+        Intent newIntent = new Intent(getContext(), ExtendedTip.class);
+        String message = "hello";
+        intent.putExtra("longTip", "hello");
+        System.out.println("Not a problem with putting extra");
+        Context c = getContext();
+        System.out.println("Not a problem with getcontext");
+        c.startActivity(newIntent);
+        System.out.println("Not a problem with startActivity or the intent");
+    }
 
 
     @Override

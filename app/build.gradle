@@ -23,10 +23,11 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
     //compile project (':AndTinder') //Possible probs here
+    //compile files ('libs/jkl.jar')
+    compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.github.kikoso:SwipeableCards:1.1-RELEASE@aar'
     compile 'com.android.support:percent:23.1.0'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
-    //compile files ('libs/jkl.jar')
+    compile 'com.android.support:design:23.1.1'
 }
