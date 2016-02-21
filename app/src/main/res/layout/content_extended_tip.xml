@@ -8,14 +8,45 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="csteachingtips.csteachingtinder.ExtendedTip"
     tools:showIn="@layout/activity_extended_tip">
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id = "@+id/extendedTip"/>
+        android:layout_height="fill_parent"
+        android:textSize="18sp"
+        android:id = "@+id/scrollView">
+
+   <WebView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+   </WebView>
+
+
+        </ScrollView>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Return to Tips"
+        android:layout_alignBottom="@id/scrollView"
+        android:minHeight="60dp"
+        android:id = "@+id/returnButton"/>
+
 
 
 </RelativeLayout>
+<!--
+
+ <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:id = "@+id/extendedTip"/>
+
+
+
+app:layout_behavior="@string/appbar_scrolling_view_behavior"
+-->

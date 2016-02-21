@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         //Create an action bar with our logo
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setIcon(R.drawable.combined_logo);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1")));
 

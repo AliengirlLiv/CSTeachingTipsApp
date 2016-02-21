@@ -1,5 +1,6 @@
 package csteachingtips.csteachingtinder;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,36 +8,41 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class ExtendedTip extends AppCompatActivity {
+public class ExtendedTip extends AppCompatActivity implements View.OnClickListener {
 
-    TextView t;
+    WebView w;
+    //TextView t;
+    Button b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_extended_tip);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar); //Maybe change this????
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "What is this thing??????????", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        t = (TextView) findViewById(R.id.extendedTip);
+        //t = (TextView) findViewById(R.id.extendedTip);
         Intent intent = getIntent();
-        String message = intent.getStringExtra("longTip");//MyActivity.EXTRA_MESSAGE);
-        t.setText(message);
-        t.setTextSize(40);
+        String message = intent.getStringExtra("longTip");
+        //t.setText(message);
 
-        //RelativeLayout layout = (RelativeLayout) findViewById(R.id.content);
-        //layout.addView(textView);
+        b = (Button) findViewById(R.id.returnButton);
+        b.setOnClickListener(this);
+
     }
+
+
+    public void onClick(View v) {
+            Intent intent = new Intent(this, MainActivity.class);
+            String message = "goodbye";
+            intent.putExtra("longTip", "hello");
+            startActivity(intent);
+    }
+
+
+
 
 }

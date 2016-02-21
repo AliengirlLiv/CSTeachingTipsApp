@@ -24,10 +24,12 @@ public class TipStackAdapter extends CardStackAdapter implements View.OnClickLis
 
     protected List<CardModel> mData;
     Button extendButton;
+    ArrayList<String> longTips;
 
     public TipStackAdapter(Context mContext) {
         super(mContext);
         mData = Collections.synchronizedList(new ArrayList<CardModel>());
+        longTips = new ArrayList<String>();
     }
 
     @Override
@@ -39,6 +41,7 @@ public class TipStackAdapter extends CardStackAdapter implements View.OnClickLis
         }
 
         ((TextView) convertView.findViewById(R.id.tip)).setText(model.getTitle()); //If we ever want description, put it in here.
+        longTips.add(model.getDescription());
         int[] col = getColor();
         (convertView.findViewById(R.id.tip_container)).setBackgroundColor(col[0]);
         ///(convertView.findViewById(R.id.expand)).setBackgroundColor(col[1]);
@@ -77,15 +80,21 @@ public class TipStackAdapter extends CardStackAdapter implements View.OnClickLis
 
 
     public void onClick(View v){
-        Intent intent = new Intent("csteachingtips.csteachingtinder.ExtendedTip");
-        Intent newIntent = new Intent(getContext(), ExtendedTip.class);
-        String message = "hello";
-        intent.putExtra("longTip", "hello");
-        System.out.println("Not a problem with putting extra");
+        Intent intent = new Intent(getContext(), ExtendedTip.class);
+        System.out.print("Long Tip: ");
+        printLongTips();
+        intent.putExtra("longTip", longTips.get(0));
         Context c = getContext();
-        System.out.println("Not a problem with getcontext");
-        c.startActivity(newIntent);
-        System.out.println("Not a problem with startActivity or the intent");
+        c.startActivity(intent);
+    }
+
+
+
+
+    private void printLongTips(){
+        for (String tip : longTips) {
+            System.out.println(longTips);
+        }
     }
 
 

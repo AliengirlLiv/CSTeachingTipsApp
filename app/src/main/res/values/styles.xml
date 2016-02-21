@@ -17,4 +17,16 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@color/background_pink</item>
+        <item name="android:icon">@drawable/combined_logo</item>
+    </style>
+
+    <style name="NormalScreen" parent="Theme.AppCompat.Light">
+    <item name="android:windowBackground">@color/light_green</item>
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+
+    </style>
+
+
 </resources>
