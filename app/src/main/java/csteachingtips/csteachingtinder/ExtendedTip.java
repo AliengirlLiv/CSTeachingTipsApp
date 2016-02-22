@@ -2,6 +2,7 @@ package csteachingtips.csteachingtinder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -33,17 +34,17 @@ public class ExtendedTip extends AppCompatActivity implements View.OnClickListen
         w.getSettings().setJavaScriptEnabled(true);
         w.setWebViewClient(new WebViewClient() {
             @Override
-            public void onPageFinished(WebView view, String url)
+            public void onPageCommitVisible(WebView view, String url)//, Bitmap favicon)
             {
-                w.loadUrl("javascript: (function() { " +
-                        "document.getElementById('footer').style.display = 'none'; " +
-                        "document.getElementById('disqus_thread').style.display = 'none'; " +
-                        "document.getElementsByClassName('tipside')[0].style.display = 'none';" +
-                        "document.getElementsByClassName('socialmediabuttons')[0].style.display = 'none';" +
-                        "document.getElementsByClassName('container-fluid')[0].style.display = 'none';" +
-                        "document.getElementsByClassName('sources')[0].style.display = 'none';" +
-                        "document.getElementsByClassName('tipside')[1].style.display = 'none';" +
-                        "})()");
+               w.loadUrl("javascript: (function() { " +
+                       "document.getElementsByClassName('container-fluid')[0].style.display = 'none';" +
+                       "document.getElementsByClassName('socialmediabuttons')[0].style.display = 'none';" +
+                       "document.getElementsByClassName('sources')[0].style.display = 'none';" +
+                       "document.getElementsByClassName('tipside')[0].style.display = 'none';" +
+                       "document.getElementsByClassName('tipside')[1].style.display = 'none';" +
+                       "document.getElementById('disqus_thread').style.display = 'none'; " +
+                       "document.getElementById('footer').style.display = 'none'; " +
+                       "})()");
             }
         });
 
@@ -52,7 +53,6 @@ public class ExtendedTip extends AppCompatActivity implements View.OnClickListen
 
 
         w.loadUrl("http://csteachingtips.org/tip/teach-students-combine-critical-thinking-skills-and-smart-searching-techniques-so-they-can");
-
 
 
 
