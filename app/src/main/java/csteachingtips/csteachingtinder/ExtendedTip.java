@@ -18,18 +18,12 @@ import android.widget.TextView;
 public class ExtendedTip extends AppCompatActivity implements View.OnClickListener {
 
     WebView w;
-    //TextView t;
     Button b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_extended_tip);
-        //w = (WebView) findViewById(R.id.webview);
-        //w.loadUrl("http://csteachingtips.org/tip/teach-students-combine-critical-thinking-skills-and-smart-searching-techniques-so-they-can");
-        //t = (TextView) findViewById(R.id.extendedTip);
-
-
         w = (WebView)findViewById(R.id.webview);
         w.getSettings().setJavaScriptEnabled(true);
         w.setWebViewClient(new WebViewClient() {
@@ -47,23 +41,12 @@ public class ExtendedTip extends AppCompatActivity implements View.OnClickListen
                        "})()");
             }
         });
-
        // <div class="field field-name-field-tags field-type-taxonomy-term-reference field-label-above"><div class="field-label">Tags:&nbsp;</div><div class="field-items"><div class="field-item even"><a href="/browse-all?field_tags%5B%5D=423&amp;search_api_views_fulltext=&amp;sort_by=created">Exploring Computer Science (ECS)</a></div><div class="field-item odd"><a href="/browse-all?field_tags%5B%5D=387&amp;search_api_views_fulltext=&amp;sort_by=created">Meaningful and Relevant Content</a></div></div></div>
-
-
-
         w.loadUrl("http://csteachingtips.org/tip/teach-students-combine-critical-thinking-skills-and-smart-searching-techniques-so-they-can");
-
-
-
-
         Intent intent = getIntent();
         String message = intent.getStringExtra("longTip");
-        //t.setText(message);
-
         b = (Button) findViewById(R.id.returnButton);
         b.setOnClickListener(this);
-
     }
 
 
@@ -73,8 +56,4 @@ public class ExtendedTip extends AppCompatActivity implements View.OnClickListen
             intent.putExtra("longTip", "hello");
             startActivity(intent);
     }
-
-
-
-
 }

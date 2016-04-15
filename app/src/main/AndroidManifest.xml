@@ -41,6 +41,10 @@
         <activity
             android:name=".ExtendedTip"
             ></activity>
+
+        <activity
+            android:name=".Settings"
+            ></activity>
     </application>
 
 </manifest>

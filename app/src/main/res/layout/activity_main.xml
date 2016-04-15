@@ -24,6 +24,19 @@
             android:src="@drawable/info" />
 
 
+    <Button
+        android:id="@+id/check_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap to Check if You're Connected Now."
+        android:paddingTop="30dp"
+        android:textSize="20pt"
+        android:background="@color/background_green"
+        android:visibility="gone"
+
+        />
+
+
     <csteachingtips.csteachingtinder.CardPile
         android:id="@+id/tips"
         android:layout_width="match_parent"
@@ -45,6 +58,7 @@
         android:minHeight="40dp"
         android:gravity="center"
         android:layout_gravity="bottom"
+
         />
 
 

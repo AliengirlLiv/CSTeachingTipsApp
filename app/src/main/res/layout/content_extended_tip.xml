@@ -35,7 +35,8 @@
         android:text="Return to Tips"
         android:layout_alignBottom="@id/scrollView"
         android:minHeight="60dp"
-        android:id = "@+id/returnButton"/>
+        android:id = "@+id/returnButton"
+        />
 
 
 

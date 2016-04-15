@@ -2,7 +2,9 @@ package csteachingtips.csteachingtinder;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -44,7 +46,6 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements CardModel.OnCardDimissedListener, View.OnClickListener {
 
-
     TextView instructions;
     CardPile tipContainer;
     TipStackAdapter adapter;
@@ -78,11 +79,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
      */
     private GoogleApiClient client;
     static boolean ready = true;
-
-
-
-
-
+    private User currentUser;
+    private ArrayList<User> users;
 
 
 
@@ -92,6 +90,10 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setStuffUp();
+    }
+
+    public void setStuffUp() {
         setContentView(R.layout.activity_main);
 
         //Create an action bar with our logo
@@ -128,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         extendedTipsSoFar= new ArrayList<String>();
         viewsSoFar = new ArrayList<Integer>();
         likesSoFar = new ArrayList<Integer>();
+        t = new TipSorter(this, tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
 
 
 
@@ -139,8 +142,25 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         final ValueCallback v = new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String jsonTip) {
-                System.out.print("JSON TIP!!!!!!!!!!!   ");
+                System.out.print("JSON TIP!!!!!!!!!!!");
                 System.out.println(jsonTip);
+                System.out.println(jsonTip.getClass().getName());
+                System.out.println(jsonTip.equals("null"));
+                if (jsonTip.equals("null")) {
+                    new AlertDialog.Builder(MainActivity.this).setMessage("Couldn't load tip.  Are you connected to the internet?").setNeutralButton("Close", null).show();
+                    Button b = (Button) findViewById(R.id.check_connection);
+                    b.setVisibility(View.VISIBLE);
+                    b.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+                            System.out.println("I've been clicked!!!!!");
+                            setStuffUp();
+                        }
+
+                    });
+                    return;
+                }
                 int index = jsonTip.indexOf("\\n\\n");
                 System.out.println(index);
                 String title = jsonTip.substring(0, index);
@@ -318,31 +338,24 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     public boolean onOptionsItemSelected(MenuItem item) {
         //Specify what happens when each menu item is pressed.
         switch (item.getItemId()) {
-            case R.id.view_results:
-                // When you click "View Results," you get a popup with the tips sorted in order of popularity.
-                t = new TipSorter(this, tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
-                goodTipsPopUp(t);
-                return true;
-
-            case R.id.download_results:
-                // When you click "Download Results," it downloads data as a csv.
-                t = new TipSorter(this, tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
-                saved = true;
-                verifyStoragePermissions(this);
-                downloadMessage(t.newFile(versionNum()));
-                return true;
-
-            case R.id.clear_data:
-                // When you click "Clear Data" you a popup asking you if you really want to delete the data.
-                areYouSure();
-                return true;
 
             case R.id.settings:
-                // When you click "Settings," nothing happens (yet).
+                goToSettings();
                 return true;
+
+            case android.R.id.home:
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+
+    public void goToSettings(){
+        Intent intent = new Intent(this, Settings.class);
+        startActivity(intent);
     }
 
 
@@ -374,8 +387,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     //We save the data on the tips viewed so far (and other important data) in SharedPreferences
     // whenever we navigate away from the app or close it.
-    public boolean saveData()
-    {
+    public boolean saveData() {
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
 
@@ -421,7 +433,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         }
 
     }
-
 
 
     //Clear SharedPreferences and the data storage ArrayLists.
@@ -472,21 +483,11 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     }
 
 
-
-
-
-
-
-
-
-
     //Open the help popup when you click on the info button
     @Override
     public void onClick(View v) {
-        showAboutPopUp();
-        printTips(); //Take this out later, but it's useful now for debugging.
-        //System.out.println("_______________________________________");    <== These lines are useful for debugging.
-        //adapter.print();
+                showAboutPopUp();
+                printTips();
     }
 
 

@@ -3,15 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <item android:id="@+id/view_results"
-        android:title="View Results"/>
-
-    <item android:id="@+id/download_results"
-        android:title="Download Results"/>
-
-    <item android:id="@+id/clear_data"
-        android:title="Clear Stored Data"/>
-
     <item android:id="@+id/settings"
         android:title="Settings"/>
 
