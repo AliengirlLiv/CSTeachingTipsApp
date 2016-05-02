@@ -21,9 +21,9 @@ public class Tip extends CardModel implements Comparable<Tip> {
 
 
 
-    public Tip(String description, String longDescription, int likes, int views) {
-        super(null, description, (Drawable) null);
-        this.longDescription = longDescription;
+    public Tip(String title, String extended, int likes, int views) {
+        super(title, extended, (Drawable) null);
+        longDescription = extended;
         this.views = views;
         this.likes = likes;
     }

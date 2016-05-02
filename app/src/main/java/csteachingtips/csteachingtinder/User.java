@@ -1,45 +1,35 @@
 package csteachingtips.csteachingtinder;
 
+import java.util.ArrayList;
+
 /**
  * Created by Heather on 3/18/2016.
  */
-public class User {
+public class User implements java.io.Serializable {
 
-    /*public static final int PRIMARILY_CS_TEACHER = 1;
-    public static final int PRIMARILY_NON_CS_TEACHER = 2;
-    public static final int NON_CS_TEACHER = 3;
-    public static final int CS_PROFESSIONAL = 4;
-    public static final int CS_STUDENT = 5;
-    public static final int OTHER_USER = 6;
-    private static final int ELEMENTARY = 7;
-    private static final int JUNIOR_HIGH = 8;
-    private static final int HIGH_SCHOOL = 9;
-    private static final int COLLEGE = 10;
-    private static final int OTHER_GRADE = 11;*/
-    private String username;
-    private String user;
-    private String otherUser;
+
+    private String username = "Anonymous/Conference Mode";
+    /*private String myRole;
+    private String otherRole;
     private String grade;
-    private String otherGrade;
+    private String otherGrade;*/
+    private boolean anonymous = false;
+    private ArrayList<String[]> questions;
 
-    public User (String username, String user, String otherUser, String grade, String otherGrade){
+   /* public User (String username, String user, String otherUser, String grade, String otherGrade){
         this.username = username;
-        this.user = user;
-        this.otherUser = otherUser;
+        this.myRole = user;
+        this.otherRole = otherUser;
         this.grade = grade;
         this.otherGrade = otherGrade;
     }
 
-    public String getUsername(){
-        return username;
+    public String getMyRole(){
+        return myRole;
     }
 
-    public String getUser(){
-        return user;
-    }
-
-    public String getOtherUser(){
-        return otherUser;
+    public String getOtherRole(){
+        return otherRole;
     }
 
     public String getGrade(){
@@ -48,7 +38,49 @@ public class User {
 
     public String getOtherGrade(){
         return otherGrade;
+    }*/
+
+    public User (boolean anonymous){
+        this.anonymous = anonymous;
+        questions = new ArrayList<String[]>();
     }
+
+    public User (String username, ArrayList<String[]> questionResponses){
+        this.username = username;
+        questions = new ArrayList<String[]>();
+        for (String[] q: questionResponses){
+            questions.add(q);
+        }
+
+    }
+
+
+    public ArrayList<String[]> getQuestions(){
+        return questions;
+    }
+
+    public void addQuestion(String[] newQuestion){
+        questions.add(newQuestion);
+    }
+
+
+
+
+    public Boolean getAnonymous(){ return anonymous; }
+
+    public String getUsername(){
+        return username;
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 

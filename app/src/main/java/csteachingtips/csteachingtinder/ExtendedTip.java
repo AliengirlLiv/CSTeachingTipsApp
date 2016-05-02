@@ -3,11 +3,15 @@ package csteachingtips.csteachingtinder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -23,6 +27,15 @@ public class ExtendedTip extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // FIGURE OUT HOW TO MAKE THIS APPLY TO ALL SCREENS
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.drawable.combined_logo);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1")));
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+
         setContentView(R.layout.activity_extended_tip);
         w = (WebView)findViewById(R.id.webview);
         w.getSettings().setJavaScriptEnabled(true);
@@ -56,4 +69,35 @@ public class ExtendedTip extends AppCompatActivity implements View.OnClickListen
             intent.putExtra("longTip", "hello");
             startActivity(intent);
     }
+
+    //FIND A WAY TO REUSE THIS CODE
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //Specify what happens when each menu item is pressed.
+        switch (item.getItemId()) {
+
+            case R.id.settings:
+                goToSettings();
+                return true;
+
+            case android.R.id.home:
+                Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivityForResult(myIntent, 0);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+
+    //FIND A WAY TO REUSE THIS CODE
+    public void goToSettings(){
+        Intent intent = new Intent(this, Settings.class);
+        startActivity(intent);
+    }
+
+
+
 }

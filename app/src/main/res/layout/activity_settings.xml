@@ -9,128 +9,152 @@
     android:fitsSystemWindows="true"
     tools:context="csteachingtips.csteachingtinder.Settings">
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="fill_parent"
-android:layout_height="wrap_content"
-android:fadeScrollbars="false"
-android:scrollbars = "vertical"
-android:saveEnabled="true"
-android:scrollbarSize="30dp">
-
-<LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:scrollbarStyle="insideOverlay">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="\n User"
-        android:textSize="30sp"/>
-
-    <TextView
-        android:id="@+id/current_user"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Current user:"
-        android:textSize="15sp"/>
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RadioButton
-            android:id="@+id/personal_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Personal User" />
-
-        <RadioButton
-            android:id="@+id/conference_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Anonymous/Conference Mode" />
-
-    </RadioGroup>
-
-    <Spinner
-        android:id="@+id/available_users"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></Spinner>
-
-    <Button
-        android:id="@+id/new_user"
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
+        android:layout_margin="@dimen/activity_vertical_margin"
         android:layout_height="wrap_content"
-        android:text="Create New User"
-        />
+        android:fadeScrollbars="false"
+        android:scrollbars = "vertical"
+        android:saveEnabled="true"
+        android:scrollbarSize="30dp">
 
-<!--
-    <EditText android:id="@+id/edit_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Here's a prompt.  You should write here!" />
-        -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:scrollbarStyle="insideOverlay">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="\n Personal Information:"
-        android:textSize="30sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="\n User"
+                android:textSize="@dimen/header_text"/>
 
-    <TextView
-        android:id="@+id/my_role"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My Role:"
-        android:textSize="15sp"/>
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/r_group">
 
-    <TextView
-        android:id="@+id/grade_levels"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grades Taught:"
-        android:textSize="15sp"/>
+                <RadioButton
+                    android:id="@+id/personal_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Personal User"
+                    android:textSize="@dimen/normal_text"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="\n Data"
-        android:textSize="30sp"/>
+                <RadioButton
+                    android:id="@+id/conference_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Anonymous/Conference Mode"
+                    android:textSize="@dimen/normal_text"/>
 
-    <Button
-        android:id="@+id/download_data"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Download Data" />
+            </RadioGroup>
 
-    <Button
-        android:id="@+id/upload_data"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Upload Data" />
 
-    <CheckBox
-        android:id="@+id/auto_upload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Periodically Automatically Upload Stored Data" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:textSize="@dimen/normal_text"
+                >
 
-    <Button
-        android:id="@+id/view_favorites"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View My Favorites" />
 
-    <Button
-        android:id="@+id/clear_stored_data"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Clear Stored Data" />
-</LinearLayout>
-</ScrollView>
+                <TextView
+                    android:id="@+id/current_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Current user:"
+                    android:textSize="@dimen/normal_text"/>
+
+
+
+                <Spinner
+                    android:id="@+id/available_users"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/normal_text"/>
+
+
+
+            </LinearLayout>
+
+
+
+
+
+            <Button
+                android:id="@+id/new_user"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/normal_text"
+                android:text="Create New User"
+                />
+
+            <!--
+                <EditText android:id="@+id/edit_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Here's a prompt.  You should write here!" />
+                    -->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="\n Personal Information"
+                android:textSize="@dimen/header_text"/>
+
+            <TextView
+                android:id="@+id/personal_questions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Personal Questions"
+                android:singleLine="false"
+                android:textSize="@dimen/normal_text"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="\n Data"
+                android:textSize="@dimen/header_text"/>
+
+            <Button
+                android:id="@+id/download_data"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/normal_text"
+                android:text="Download Data" />
+
+            <Button
+                android:id="@+id/upload_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/normal_text"
+                android:text="Upload Data" />
+
+            <CheckBox
+                android:id="@+id/auto_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/normal_text"
+                android:text="Periodically Automatically Upload Stored Data" />
+
+            <Button
+                android:id="@+id/view_favorites"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/normal_text"
+                android:text="View My Favorites" />
+
+            <Button
+                android:id="@+id/clear_stored_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/normal_text"
+                android:text="Clear Stored Data" />
+        </LinearLayout>
+    </ScrollView>
 
 
     <!--

@@ -40,10 +40,12 @@
 
         <activity
             android:name=".ExtendedTip"
+            android:configChanges="orientation|screenSize"
             ></activity>
 
         <activity
             android:name=".Settings"
+            android:configChanges="orientation|screenSize"
             ></activity>
     </application>
 

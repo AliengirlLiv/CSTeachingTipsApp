@@ -37,6 +37,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     static boolean ready = true;
     private User currentUser;
     private ArrayList<User> users;
+    int numTips = 5;
+    TextView loggedIn;
 
 
 
@@ -102,35 +105,31 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         actionBar.setIcon(R.drawable.combined_logo);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1")));
 
-        //Get the screen size, and adjust the size of the text on the bottom to match.
-    /**    Display display = getWindowManager().getDefaultDisplay();
-        Point screenSize = new Point();
-        display.getSize(screenSize);
-        Float instructionSize = (float) (screenSize.x * .045);
-        System.out.print("INSTRUCTION SIZE: ");
-        System.out.println(instructionSize);
-        if (instructionSize < 30) {
-            instructionSize = (float) 30;}
-        else if (instructionSize > 35) {
-            instructionSize = (float) 35;
-        }*/
+        //Create and display new user
+        User anonymousUser = new User(true);
+        users = new ArrayList<User>();
+        users.add(anonymousUser);
+        currentUser = anonymousUser;
+        loggedIn = (TextView) findViewById(R.id.logged_in);
+        loggedIn.setText("  Anonymous/Conference Mode");
+
+
+
 
 
         //Create the help button in the top right corner.
         helpButton = (ImageButton) findViewById(R.id.help_button);
         helpButton.setOnClickListener(this);
 
-/**
-        //Create the line of text with the instructions on the bottom of the screen.
-        instructions = (TextView) findViewById(R.id.instructions);
-        instructions.setTextSize(TypedValue.COMPLEX_UNIT_PX, instructionSize);
-*/
+
         //Update tipsSoFar with the tips saved from previous times.
         tipsSoFar = new ArrayList<String>();
         extendedTipsSoFar= new ArrayList<String>();
         viewsSoFar = new ArrayList<Integer>();
         likesSoFar = new ArrayList<Integer>();
         t = new TipSorter(this, tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
+
+
 
 
 
@@ -143,9 +142,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
             @Override
             public void onReceiveValue(String jsonTip) {
                 System.out.print("JSON TIP!!!!!!!!!!!");
-                System.out.println(jsonTip);
-                System.out.println(jsonTip.getClass().getName());
-                System.out.println(jsonTip.equals("null"));
                 if (jsonTip.equals("null")) {
                     new AlertDialog.Builder(MainActivity.this).setMessage("Couldn't load tip.  Are you connected to the internet?").setNeutralButton("Close", null).show();
                     Button b = (Button) findViewById(R.id.check_connection);
@@ -167,16 +163,10 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
                 String description = jsonTip.substring(index + 4);
                 Tip newTip = new Tip(removeQuotes(title, 1), removeQuotes(description, 0), activity);
                 adapter.add(newTip);
-                // Tips don't seem to be moveable if the adapter is not re-set
-                // after they are added. We _should_ be able to set
-                // the adapter once and not have to worry about it.
-                // Setting the adapter after a tip has been removed
-                // seems to put the tip back on top of the stack,
-                // which is very much undesirable.
                 tipContainer.setAdapter(adapter);
                 System.out.print("ADAPTER: ");
                 System.out.println(adapter.getCount());
-                if (adapter.getCount() < 5) {
+                if (adapter.getCount() < numTips) {
                     System.out.println("TOO FEW METHOD CALLED");
                     webView.reload(); //Probably problems
                 }
@@ -186,64 +176,22 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
         activity = this;
         adapter = new TipStackAdapter(this);
+/**
+        for(int i = 0; i < numTips; i++){
+            Tip newTip = tipGetter.getNewTip();////WHAT???
+            adapter.add(newTip);
+            System.out.println("Worked okay at least once");
+        }
+*/
+
+
         tipContainer = (CardPile) findViewById(R.id.tips);
         webView = new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
+
+
+
         WebViewClient wvc = new WebViewClient() {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            /**
-             *  final ValueCallback v = new ValueCallback<String>() {
-            @Override
-            public void onReceiveValue(String jsonTip) {
-            if (firstOne) {
-            newMainTip = removeQuotes(jsonTip);
-            OnCreate.onPageFinished();
-            } else {
-            Tip newTip = new Tip((newMainTip + "\n" + jsonTip), activity);
-            adapter.add(newTip);
-            tipContainer.setAdapter(adapter);
-            System.out.print("ADAPTER: ");
-            System.out.println(adapter.getCount());
-            if (adapter.getCount() < 5) {
-            System.out.println("TOO FEW METHOD CALLED");
-            webView.reload();
-            }
-            }
-            /// Tip newTip = new Tip(removeQuotes(jsonTip), activity);
-
-            }
-            };
-
-             */
-
-
-
-
-
-
-
-
-
-
 
             @Override
             public void onPageFinished(final WebView myView, String url) {
@@ -280,20 +228,10 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
 
-
-
-
-
-
     //Grab five tips from website, display them
     void loadTips() {
-
         System.out.println("LOAD TIPS METHOD CALLED");
-
-        //while(!ready) {} //Probs here
-
         webView.loadUrl(randomTipUrl);
-        //ready = false;
     }
 
 
@@ -355,6 +293,10 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     public void goToSettings(){
         Intent intent = new Intent(this, Settings.class);
+        intent.putExtra("CURRENT_USER", (Serializable) currentUser);
+        intent.putExtra("USERS", (Serializable) users);
+        intent.putExtra("GRADES", (String) "hello" );
+        intent.putExtra("ROLE", (String) "goodbye");
         startActivity(intent);
     }
 
@@ -391,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
 
+        //Stuff in lists
         e.putInt("NumTips", tipsSoFar.size());
         e.putInt("ETips", extendedTipsSoFar.size());
         e.putBoolean("Saved", saved);
@@ -406,6 +349,19 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
             e.putInt("Like" + i, likesSoFar.get(i));
             e.remove("View" + i);
             e.putInt("View" + i, viewsSoFar.get(i));
+        }
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            Tip currTip = adapter.getCurrTip();
+            e.remove("ActiveTip" + i);
+            e.putString("ActiveTip" + i, currTip.getTitle());
+            e.remove("ActiveETip" + i);
+            e.putString("ActiveETip" + i, currTip.getDescription());
+            e.remove("ActiveLikes" + i);
+            e.putInt("ActiveLikes" + i, currTip.getLikes());
+            e.remove("ActiveViews" + i);
+            e.putInt("ActiveViews" + i, currTip.getViews());
+            adapter.pop();
         }
         return e.commit();
     }
@@ -432,6 +388,18 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
             viewsSoFar.add(sp.getInt("View" + i, 0));     //All tip-storage arrays are now loaded with old data
         }
 
+        for (int i = 0; i < numTips; i++) {
+            String active = sp.getString("ActiveTip" + i, null);
+            if (active != null){
+                String description = sp.getString("ActiveETip" + i, null);
+                int likes = sp.getInt("ActiveLikes" + i, 0);
+                int views = sp.getInt("ActiveViews" + i,0);
+                Tip newTip = new Tip(active, description, likes, views);
+                System.out.println("Added a tip from sharedpreferences.");
+                System.out.println(active);
+                adapter.add(newTip); //Maybe reload webview after one?  After all of them?
+            }
+        }
     }
 
 
@@ -513,11 +481,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
 
-
-
-
-
-
     //Brings up a popup with the tips (sorted by popularity).  There are three buttons: two to
     //navigate through the tips, and one to close the popup.
     void goodTipsPopUp(TipSorter tipSorter) {
@@ -579,6 +542,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
 
+
     //Return the current group (the current set of 10 tips being viewed).
     public int getGroup(){
         return group;
@@ -590,11 +554,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     public void incrementGroup(int num){
         group += num;
     }
-
-
-
-
-
 
 
 
@@ -616,6 +575,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     //Stores the view and (possibly) like of the current tip in the 3 data storage ArrayLists.
     void recordTip(Tip currTip, int like) {
+        System.out.println("Record Tip");
         String body = currTip.getDescription();
         String title = currTip.getTitle();
         int tipIndex = findTip(title);
@@ -636,6 +596,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     @Override
     public void onLike() {
         recordTip(adapter.getCurrTip(), 0);
+        System.out.println("ON LIKE");
+        System.out.println(adapter.getCurrTip().getTitle());
         adapter.pop();
         //webView.loadUrl(randomTipUrl);
         tipsLeft--;
@@ -646,6 +608,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     @Override
     public void onDislike() {
+        System.out.println("On Dislike");
         recordTip(adapter.getCurrTip(), 1);
         adapter.pop();
         //webView.loadUrl(randomTipUrl);
@@ -713,7 +676,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     protected void onPause() {
         super.onPause();
         saveData();
-
     }
 
 
@@ -776,20 +738,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
-        //Change the text size depending on the current width of the screen
-      /**  Display display = getWindowManager().getDefaultDisplay();
-        Point screenSize = new Point();
-        display.getSize(screenSize);
-        Float instructionSize = (float) (screenSize.x * .045);
-        if (instructionSize < 30) {
-            instructionSize = (float) 30;
-        } else if (instructionSize > 45) {
-            instructionSize = (float) 45;
-        }
-        //Create the line of text with the instructions on the bottom of the screen.
-        instructions.setTextSize(TypedValue.COMPLEX_UNIT_PX, instructionSize);
-       */    }
+   }
 
 
 
