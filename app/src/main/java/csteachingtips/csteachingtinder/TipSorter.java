@@ -115,15 +115,20 @@ public class TipSorter {
 
     //Returns a certain set of 5 tips
     public String fiveGroup(int set) {
-        System.out.print("FIRST: ");
-        System.out.println(sortedTips[0]);
-        System.out.print("LAST: ");
-        System.out.print(sortedTips[sortedTips.length - 1]);
-
-        int start = 5 * set;
         String str = "";
-        for (int i = start; i < Math.min(5 + start, sortedTips.length); i++) {
-            str = str + "Tip #" + (i + 1) + ": " + sortedTips[i] + "\n\n";
+        if (sortedTips.length==0){
+            str = "Sorry, it looks like you don't have any tips saved. \n\n After you like some tips, they will appear here.\n\n\n";
+        } else {
+            System.out.print("FIRST: ");
+            System.out.println(sortedTips[0]);
+            System.out.print("LAST: ");
+            System.out.print(sortedTips[sortedTips.length - 1]);
+
+            int start = 5 * set;
+
+            for (int i = start; i < Math.min(5 + start, sortedTips.length); i++) {
+                str = str + "Tip #" + (i + 1) + ": " + sortedTips[i] + "\n\n";
+            }
         }
         return str;
     }

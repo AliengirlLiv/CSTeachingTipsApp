@@ -65,10 +65,10 @@ public class TipStackAdapter extends CardStackAdapter implements View.OnClickLis
         int tealDark = Color.parseColor("#88B3B3");
         int greenDark = Color.parseColor("#A3C4AB");
 /**
-        int pink = Color.parseColor("#FAD4F1");
-        int yellow = Color.parseColor("#FAF0D4");
+ int pink = Color.parseColor("#FAD4F1");
+ int yellow = Color.parseColor("#FAF0D4");
 
-        int blue = Color.parseColor("#D4DEFA");*/
+ int blue = Color.parseColor("#D4DEFA");*/
         int[] colors = {green, teal, blue};
         int[] darkColors = {greenDark, tealDark, blueDark};
         //Random rand = new Random();
@@ -105,7 +105,7 @@ public class TipStackAdapter extends CardStackAdapter implements View.OnClickLis
     }
 
     /////    @Override
- /////   public CardModel pop() {
+    /////   public CardModel pop() {
     /////       CardModel model = mData.remove(getCount() - 1);
     /////       //notifyDataSetChanged();
     /////      return model;
@@ -135,13 +135,10 @@ public class TipStackAdapter extends CardStackAdapter implements View.OnClickLis
         return (Tip) mData.get(0);
     }
 
-//Take out later; currently useful for debugging
+    //Take out later; currently useful for debugging
     public void print() {
         for (CardModel cm : mData) {
             System.out.println(cm.getDescription());
         }
     }
-
 }
-
-

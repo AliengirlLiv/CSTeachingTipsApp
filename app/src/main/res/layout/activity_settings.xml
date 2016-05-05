@@ -41,14 +41,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Personal User"
-                    android:textSize="@dimen/normal_text"/>
+                    android:textSize="@dimen/normal_text"
+                    android:clickable="false"/>
 
                 <RadioButton
                     android:id="@+id/conference_mode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Anonymous/Conference Mode"
-                    android:textSize="@dimen/normal_text"/>
+                    android:textSize="@dimen/normal_text"
+                    android:clickable="false"/>
 
             </RadioGroup>
 
@@ -66,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Current user:"
-                    android:textSize="@dimen/normal_text"/>
+                    android:textSize="25sp"/>
 
 
 
@@ -74,7 +76,7 @@
                     android:id="@+id/available_users"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/normal_text"/>
+                    />
 
 
 
@@ -124,6 +126,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/normal_text"
+                android:layout_margin="5dip"
                 android:text="Download Data" />
 
             <Button
@@ -131,6 +134,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/normal_text"
+                android:layout_margin="5dip"
                 android:text="Upload Data" />
 
             <CheckBox
@@ -138,6 +142,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/normal_text"
+                android:layout_margin="5dip"
                 android:text="Periodically Automatically Upload Stored Data" />
 
             <Button
@@ -145,6 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/normal_text"
+                android:layout_margin="5dip"
                 android:text="View My Favorites" />
 
             <Button
@@ -152,6 +158,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/normal_text"
+                android:layout_margin="5dip"
                 android:text="Clear Stored Data" />
         </LinearLayout>
     </ScrollView>

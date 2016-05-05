@@ -5,14 +5,28 @@
     android:layout_height="match_parent"
     android:id="@+id/new_user_popup">
 
+
+    <TextView
+        android:id="@+id/username_taken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This username is already taken.  Please choose another one."
+        android:textColor="@color/red"
+        android:visibility="invisible"
+        />
+
+</LinearLayout>
+
+<!--
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Username"/>
 
-    <EditText
+   <EditText
         android:id="@+id/create_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-</LinearLayout>
+-->

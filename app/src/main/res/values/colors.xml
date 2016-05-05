@@ -11,4 +11,5 @@
     <color name="background_yellow">#FAF0D4</color>
     <color name="background_green">#D4FADD</color>
     <color name="background_blue">#D4DEFA</color>
+    <color name="red">#FF0000</color>
 </resources>

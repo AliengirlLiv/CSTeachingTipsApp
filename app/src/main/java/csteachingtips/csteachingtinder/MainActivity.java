@@ -1,29 +1,20 @@
 package csteachingtips.csteachingtinder;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,22 +23,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.andtinder.model.CardModel;
-import com.andtinder.view.CardContainer;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Random;
 
 
-public class MainActivity extends AppCompatActivity implements CardModel.OnCardDimissedListener, View.OnClickListener {
+public class MainActivity extends BaseActivity implements CardModel.OnCardDimissedListener, View.OnClickListener {
 
-    TextView instructions;
     CardPile tipContainer;
     TipStackAdapter adapter;
     WebView webView;
@@ -55,8 +43,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     ImageButton helpButton;
     private static final String PREFS = "prefs";
     private boolean saved = false;
-    private int numDownloads = 0;
-    private String date = "";
     ArrayList<Integer> likesSoFar;
     ArrayList<Integer> viewsSoFar;
     ArrayList<String> tipsSoFar; //All the tips we've seen so far; Depending on how long we need to store
@@ -64,15 +50,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     //of time, or even get rid of tipsSoFar all together if we can update to the site in real time.
     ArrayList<String> extendedTipsSoFar;
     int tipsLeft = 5;
-    int group = 0; //This is used to specify a single group of 10 tips to be displayed at a time.
-    AlertDialog alert;
-    TipSorter t;
-    TextView tenTips;
-    private static final int REQUEST_EXTERNAL_STORAGE = 1; //Must ask user for permission to create files.
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
+
+
     static final String randomTipUrl = "http://csteachingtips.org/random-tip";
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -91,19 +70,16 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setStuffUp();
     }
 
     public void setStuffUp() {
+
         setContentView(R.layout.activity_main);
 
         //Create an action bar with our logo
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setIcon(R.drawable.combined_logo);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1")));
+
 
         //Create and display new user
         User anonymousUser = new User(true);
@@ -111,10 +87,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         users.add(anonymousUser);
         currentUser = anonymousUser;
         loggedIn = (TextView) findViewById(R.id.logged_in);
-        loggedIn.setText("  Anonymous/Conference Mode");
-
-
-
 
 
         //Create the help button in the top right corner.
@@ -127,7 +99,21 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
         extendedTipsSoFar= new ArrayList<String>();
         viewsSoFar = new ArrayList<Integer>();
         likesSoFar = new ArrayList<Integer>();
-        t = new TipSorter(this, tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
+
+
+        getActionbar().setDisplayHomeAsUpEnabled(false);
+
+        //!//
+       /* Intent myIntent = getIntent();
+        System.out.println("INTENT: " + myIntent);
+        adapter = (TipStackAdapter) myIntent.getSerializableExtra("ADAPTER");
+        if (adapter == null){
+            adapter = new TipStackAdapter(this);
+        }*/
+
+
+
+
 
 
 
@@ -150,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
                         @Override
                         public void onClick(View v) {
-                            System.out.println("I've been clicked!!!!!");
                             setStuffUp();
                         }
 
@@ -201,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
                 myView.evaluateJavascript(
                         "var div = document.createElement('div');"
-                                + "div.innerHTML = (document.getElementsByClassName('tipspace')[0].innerHTML).concat('\\n\\n').concat(document.getElementsByClassName('field-item even')[0].innerHTML);"
+                                + "div.innerHTML = (document.getElementsByClassName('tip-title')[0].innerHTML).concat('\\n\\n').concat(document.getElementsByClassName('field-item even')[0].innerHTML);"
                                 + "div.textContent.trim() || div.innerText.trim() || '';",v); //On the line above, if there isn't any body, it gets the 1st tag instead
 
                 ready = true;
@@ -265,64 +250,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the menu in the Action Bar.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //Specify what happens when each menu item is pressed.
-        switch (item.getItemId()) {
-
-            case R.id.settings:
-                goToSettings();
-                return true;
-
-            case android.R.id.home:
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-
-
-    public void goToSettings(){
-        Intent intent = new Intent(this, Settings.class);
-        intent.putExtra("CURRENT_USER", (Serializable) currentUser);
-        intent.putExtra("USERS", (Serializable) users);
-        intent.putExtra("GRADES", (String) "hello" );
-        intent.putExtra("ROLE", (String) "goodbye");
-        startActivity(intent);
-    }
-
-
-
-    //Figures out the version number which will appear in the filename of any downloaded file.
-    //The version number is "" if it is the first time today a file has been downloaded.  Otherwise,
-    //the version number is "_1", "_2", "_3" etc.
-    String versionNum() {
-        Calendar cal = Calendar.getInstance();
-        DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        String newDate = dateFormat.format(cal.getTime());
-        if (date.equals(newDate)) {
-            numDownloads++;
-            return "_" + numDownloads;
-        }
-        date = newDate;
-        numDownloads = 0;
-        return "";
-    }
-
-
-
-
-
-
 
 
 
@@ -332,24 +259,19 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     public boolean saveData() {
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
+        Gson gson = new Gson();
 
-        //Stuff in lists
-        e.putInt("NumTips", tipsSoFar.size());
-        e.putInt("ETips", extendedTipsSoFar.size());
+        Type typeIntArrayList = new TypeToken<ArrayList<Integer>>(){}.getType();
+        Type typeStringArrayList = new TypeToken<ArrayList<String>>(){}.getType();
+        //:( Type typeAdapter = new TypeToken<TipStackAdapter>(){}.getType();
+
+        e.putString("TipsSoFar", gson.toJson(tipsSoFar, typeStringArrayList));
+        e.putString("ExtendedTipsSoFar", gson.toJson(extendedTipsSoFar, typeStringArrayList));
+        e.putString("LikesSoFar", gson.toJson(likesSoFar, typeIntArrayList));
+        e.putString("ViewsSoFar", gson.toJson(viewsSoFar, typeIntArrayList));
         e.putBoolean("Saved", saved);
-        e.putInt("NumDownloads", numDownloads);
-        e.putString("Date", date);
+        //:(e.putString("Adapter", gson.toJson(adapter, typeAdapter));
 
-        for (int i = 0; i < tipsSoFar.size(); i++) {
-            e.remove("Tip" + i);
-            e.putString("Tip" + i, tipsSoFar.get(i));
-            e.remove("ETip" + i);
-            e.putString("ETip" + i, extendedTipsSoFar.get(i));
-            e.remove("Like" + i);
-            e.putInt("Like" + i, likesSoFar.get(i));
-            e.remove("View" + i);
-            e.putInt("View" + i, viewsSoFar.get(i));
-        }
 
         for (int i = 0; i < adapter.getCount(); i++) {
             Tip currTip = adapter.getCurrTip();
@@ -372,22 +294,30 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     public void loadData()
     {
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
-        tipsSoFar.clear(); //Clear all the tip-storage arrays
-        extendedTipsSoFar.clear();
-        likesSoFar.clear();
-        viewsSoFar.clear();
-        int size = sp.getInt("NumTips", 0); //Find out how many tips there should be
         saved = sp.getBoolean("Saved", true);
-        numDownloads = sp.getInt("NumDownloads", 0);
-        date = sp.getString("Date", "");
 
-        for (int i = 0; i < size; i++) {
-            tipsSoFar.add(sp.getString("Tip" + i, null));
-            extendedTipsSoFar.add(sp.getString("ETip" + i, null));
-            likesSoFar.add(sp.getInt("Like" + i, 0));
-            viewsSoFar.add(sp.getInt("View" + i, 0));     //All tip-storage arrays are now loaded with old data
+
+        Gson gson = new Gson();
+        Type typeIntArrayList = new TypeToken<ArrayList<Integer>>(){}.getType();
+        Type typeStringArrayList = new TypeToken<ArrayList<String>>(){}.getType();
+
+        currentUser = gson.fromJson(sp.getString("CurrentUser", "Anonymous/Conference Mode"), User.class);
+        loggedIn.setText(currentUser.getUsername());
+        tipsSoFar = gson.fromJson(sp.getString("TipsSoFar", "[]"), typeStringArrayList);
+        if (tipsSoFar == null){
+            tipsSoFar = new ArrayList<>();
+            extendedTipsSoFar = new ArrayList<>();
+            viewsSoFar = new ArrayList<>();
+            likesSoFar = new ArrayList<>();
+        } else {
+            extendedTipsSoFar = gson.fromJson(sp.getString("ExtendedTipsSoFar", ""), typeStringArrayList);
+            viewsSoFar = gson.fromJson(sp.getString("ViewsSoFar", ""), typeIntArrayList);
+            likesSoFar = gson.fromJson(sp.getString("LikesSoFar", ""), typeIntArrayList);
         }
 
+
+
+        //Save current tips
         for (int i = 0; i < numTips; i++) {
             String active = sp.getString("ActiveTip" + i, null);
             if (active != null){
@@ -400,63 +330,27 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
                 adapter.add(newTip); //Maybe reload webview after one?  After all of them?
             }
         }
-    }
 
-
-    //Clear SharedPreferences and the data storage ArrayLists.
-    private void clearData() {
-        System.out.println("Clearing Data!!!");
-        SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
-        sp.edit().clear().apply();
-        tipsSoFar = new ArrayList<String>();
-        extendedTipsSoFar= new ArrayList<String>();
-        likesSoFar = new ArrayList<Integer>();
-        viewsSoFar = new ArrayList<Integer>();
 
     }
 
 
 
-    //Ask the user if they want to delete the data.
-    private void areYouSure() {
-        AlertDialog.Builder popup = new AlertDialog.Builder(this);
-        popup.setTitle("Are You Sure You Want To Clear Data?");
-        String str = "The data cannot be recovered once deleted.";
-        if (unsaved()) {
-            str = "This data has not been downloaded yet.\n" + str;
-        }
-        popup.setMessage(str);
-        popup.setPositiveButton("Delete Away",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whatever) {
-                        clearData();
-                        //Then close the popup
-                    }
-                });
-        popup.setNegativeButton("No, Wait!",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whatever) {
-                        // Just close the popup
-                    }
-                });
-        AlertDialog popupReal = popup.create();
-        popupReal.show();
-    }
 
 
-
-    //Check whether the data has been downloaded yet.
-    private boolean unsaved() {
-        return !saved;
-    }
 
 
     //Open the help popup when you click on the info button
     @Override
     public void onClick(View v) {
-                showAboutPopUp();
-                printTips();
+        showAboutPopUp();
+        adapter.print();
+        //!//printTips();
     }
+
+
+
+
 
 
     //"About this app" Popup opens; closes when the user clicks the "Close" button
@@ -481,79 +375,8 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
 
-    //Brings up a popup with the tips (sorted by popularity).  There are three buttons: two to
-    //navigate through the tips, and one to close the popup.
-    void goodTipsPopUp(TipSorter tipSorter) {
-        //Create popup
-        alert = new AlertDialog.Builder(this).create();
-        t = tipSorter;
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.my_alert_dialog, (ViewGroup) findViewById(R.id.tip_popup));
-        alert.setTitle("Top Tips");
-        int group = 0;
-        tenTips = (TextView) view.findViewById(R.id.ten_tips);
-        tenTips.setText(t.fiveGroup(group));  //Text is the top 10 tips.
-        Button backButton = (Button) view.findViewById(R.id.backward_button);
-        Button forwardButton = (Button) view.findViewById(R.id.forward_button);
-        Button closeButton = (Button) view.findViewById(R.id.close_button);
-
-        //Specifies what happens when you click the "Back" button.
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity main = MainActivity.this;
-                int group = main.getGroup();
-                if (group > 0) { //If possible, go to the previous set of 5 tips.
-                    main.incrementGroup(-1);
-                    main.tenTips.setText(main.t.fiveGroup(group - 1));
-                }
-            }
-        });
-
-        //Specifies what happens when you click the "Forward" button.
-        forwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity main = MainActivity.this;
-                int group = main.getGroup();
-                if (group < (tipsSoFar.size() - 1) / 5) {  //If possible, go to the next set of 5 tips.
-                    System.out.println("NEW DATA SET");
-                    System.out.println(tipsSoFar.size());
-                    System.out.println(group);
-                    System.out.println((tipsSoFar.size() - 1) / 5);
-                    main.incrementGroup(1);
-                    main.tenTips.setText(main.t.fiveGroup(group + 1));
-                }
-            }
-        });
-
-        //Specifies what happens when you click the "Close" button.
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.this.alert.dismiss();   //Close popup.
-            }
-        });
-
-        alert.setView(view);
-        alert.show();
-    }
 
 
-
-
-
-    //Return the current group (the current set of 10 tips being viewed).
-    public int getGroup(){
-        return group;
-    }
-
-
-
-    //Change "group" by a certain amount.
-    public void incrementGroup(int num){
-        group += num;
-    }
 
 
 
@@ -561,8 +384,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     //Find and return the index of a certain tip
     int findTip(String text) {
         //Loop through previously created tips, see if this tip is already there.
-        System.out.println("STARTING!!!");
-        System.out.println(tipsSoFar.size());
         for (int i = 0; i < tipsSoFar.size(); i++) {
             if (text.equals(tipsSoFar.get(i))) {
                 return i;             //Returns the index of the matching tip (if there is one).
@@ -575,7 +396,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     //Stores the view and (possibly) like of the current tip in the 3 data storage ArrayLists.
     void recordTip(Tip currTip, int like) {
-        System.out.println("Record Tip");
         String body = currTip.getDescription();
         String title = currTip.getTitle();
         int tipIndex = findTip(title);
@@ -596,8 +416,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
     @Override
     public void onLike() {
         recordTip(adapter.getCurrTip(), 0);
-        System.out.println("ON LIKE");
-        System.out.println(adapter.getCurrTip().getTitle());
         adapter.pop();
         //webView.loadUrl(randomTipUrl);
         tipsLeft--;
@@ -608,7 +426,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
     @Override
     public void onDislike() {
-        System.out.println("On Dislike");
         recordTip(adapter.getCurrTip(), 1);
         adapter.pop();
         //webView.loadUrl(randomTipUrl);
@@ -638,27 +455,6 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
 
-
-    //Popup appears, telling the user where the data has been saved.
-    private void downloadMessage(String fileName) {
-        AlertDialog.Builder popup = new AlertDialog.Builder(this);
-        if (fileName.equals("Error: File not created.")) {
-            popup.setTitle("Download Not Completed :(");
-            popup.setMessage("There must have been been some problem.  The file couldn't be created.");
-        } else {
-            popup.setTitle("Download Complete!");
-            String str = "A csv file named " + fileName + " has been saved to the Downloads folder in your phone's internal storage.";
-            popup.setMessage(str);
-        }
-        popup.setPositiveButton("Close",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whatever) {
-                        //Then close the popup
-                    }
-                });
-        AlertDialog popupReal = popup.create();
-        popupReal.show();
-    }
 
 
 
@@ -745,33 +541,9 @@ public class MainActivity extends AppCompatActivity implements CardModel.OnCardD
 
 
 
-
-
-     // Checks if the app has permission to write to device storage
-     // If the app does not have permission then the user will be prompted to grant permissions
-    public static void verifyStoragePermissions(Activity activity) {
-        // Check if we have file reading/writing permissions already
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission, so ask the user for them
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-        }
-    }
-
-
-
-
-
-
-
-
     //Get rid of this later; this is just helpful for now in to see what elements tipsSoFar holds.
     void printTips() {
+        System.out.println("TIPS SO FAR IS " + tipsSoFar);
         for (int i = 0; i < tipsSoFar.size(); i++) {
             System.out.print(tipsSoFar.get(i));
             System.out.print("  -  ");
