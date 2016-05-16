@@ -9,13 +9,14 @@ public class Tip extends CardModel implements Comparable<Tip> {
     int views = 0;
     int likes = 0;
     String longDescription;
+    int[] color = {-5324312, -7693896}; //Blue
 
 
 
-//NEW!!!
-    public Tip(String title, String description, OnCardDimissedListener listener) {
+    public Tip(String title, String description, OnCardDimissedListener listener, int[] color) {
         super(title, description, (Drawable) null);
         setOnCardDimissedListener(listener);
+        this.color = color;
     }
 
 
@@ -26,6 +27,18 @@ public class Tip extends CardModel implements Comparable<Tip> {
         longDescription = extended;
         this.views = views;
         this.likes = likes;
+    }
+
+
+
+
+
+    public Tip(String title, String extended, int likes, int views, int[] color) {
+        super(title, extended, (Drawable) null);
+        longDescription = extended;
+        this.views = views;
+        this.likes = likes;
+        this.color = color;
     }
 
     public int getViews() {
@@ -40,10 +53,11 @@ public class Tip extends CardModel implements Comparable<Tip> {
         return longDescription;
     }
 
-
     public double getRatio() {
         return (1.0 * likes) / views;
     }
+
+    public int[] getColor() {return color; }
 
 
     @Override
@@ -57,20 +71,14 @@ public class Tip extends CardModel implements Comparable<Tip> {
             return 1;
         } else {
             return other.getViews() - getViews();
-
         }
-
-
     }
-
 
 
     @Override
     public String toString() {
         return likes + "/" + views + " people liked " + '"' + getDescription() + '"';
     }
-
-
 
 
 }

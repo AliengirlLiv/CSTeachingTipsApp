@@ -4,24 +4,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -36,7 +25,6 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -89,16 +77,6 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
-        //!//Intent newIntent = getIntent();
-        //!//adapter = (TipStackAdapter) newIntent.getSerializableExtra("ADAPTER");
-        //Create an action bar with our logo
-       /* ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setIcon(R.drawable.combined_logo);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AEE8C1")));
-        actionBar.setDisplayHomeAsUpEnabled(true);*/
-
         personalUser = (RadioButton) findViewById(R.id.personal_user);
         radioGroup = (RadioGroup) findViewById(R.id.r_group);
         conferenceMode = (RadioButton) findViewById(R.id.conference_mode);
@@ -120,9 +98,8 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
         loadPersonalQuestions();
         getData();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, usernames);
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this, R.layout.spinner_item, usernames); //If this doesn't work, put this in availableUsers... prev line
-        availableUsers.setAdapter(adapter2);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, usernames);
+        availableUsers.setAdapter(adapter);
         switchUser(currentUser);
     }
 
@@ -140,13 +117,12 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
                 downloadData();
                 break;
             case R.id.upload_data:
-                //Nothing here yet.
+                //Nothing here yet.  Someday there should be a way to automatically upload data from
+                //the app to the website.
                 break;
             case R.id.view_favorites:
                 // When you click "View Results," you get a popup with the tips sorted in order of popularity.
-                ///I don't think you need this.  t = new TipSorter(this,tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
                 goodTipsPopUp(t);
-                //Popup, or maybe some sort of return thing.
                 break;
             case R.id.clear_stored_data:
                 // When you click "Clear Data" you a popup asking you if you really want to delete the data.
@@ -156,8 +132,10 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
     }
 
 
-
-
+    /**
+     * @param QandA - The ArrayList of string arrays in the form [question, answer].
+     * @return The properly formatted question/answer text.
+     */
     private String formatQandA(ArrayList<String[]> QandA){
         String result = "";
         for (String[] q : QandA){
@@ -166,21 +144,24 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
         return result;
     }
 
+    //We only have a few personal questions so far, but we could add any questions needed here.
     private void loadPersonalQuestions(){
         personalQuestions = Arrays.asList("Username", "Which best describes your role?", "If you are an educator, what grades you typically teach?");
     }
 
 
 
+
+    /**\
+     * A popup appears that allows you to create a new user.
+     * That user becomes the current user.
+     */
     private void createNewUser(){
         AlertDialog.Builder createUserBuilder = new AlertDialog.Builder(this);
         createUserBuilder.setTitle("Create New User");
         final LayoutInflater inflater = getLayoutInflater();
-        //View vew2 = inflater.inflate(R.layout.create_user_dialog, (TextView)  findViewById(R.id.username_taken));
         clearStoredData = (Button) findViewById(R.id.clear_stored_data);
         final LinearLayout popupLayout = new LinearLayout(this);
-        /////popupLayout.addView(view);
-        //TextView usernameTaken = (TextView)
         popupLayout.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, android.app.ActionBar.LayoutParams.WRAP_CONTENT);
         final ArrayList<EditText> editTexts = new ArrayList<EditText>();
@@ -229,6 +210,11 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
         createUserBuilder.show();
     }
 
+
+    /**
+     * Change the current user
+     * @param newCurrentUser The new current user.
+     */
     private void switchUser(User newCurrentUser){
         currentUser = newCurrentUser;
         conferenceMode.setChecked(currentUser.getAnonymous());
@@ -241,28 +227,10 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
     }
 
 
-
-
-
-
-
-
-   /*
-
-    CURRENT PLAN OF ACTION:
-    - find out why users isn't getting recognized
-    Save the popup results as a real user.
-
-    PROBLEMS!!!
-    - Repeated usernames is ok
-    - Tips not popping up*/
-
-
-
-
-
-
-
+    /**
+     * When you select a new user, that becomes the current user, and the personal questions
+     * get updated to reflect this.
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
         String username = usernames.get(position).toString();
@@ -277,18 +245,26 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
         }
     }
 
+
+    /**
+     * Don't do anything if someone clicks on the list of users but doesn't select one.
+     */
     @Override
     public void onNothingSelected(AdapterView<?> parentView){}
 
 
-
+    /**
+     * Call saveData to save all the personal data in SharedPreferences if the user closes or leaves the app.
+     */
     @Override
     protected void onPause(){
         super.onPause();
         saveData();
     }
 
-
+    /**
+     * Directly save all the personal data in SharedPreferences if the user closes or leaves the app.
+     */
     private void saveData(){
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
@@ -296,7 +272,6 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
         Gson gson = new Gson();
         Type listOfTestObject = new TypeToken<ArrayList<User>>(){}.getType();
         e.putString("Users", gson.toJson(users, listOfTestObject));
-       // e.putString("UserListType", gson.toJson(listOfTestObject));
         e.putString("CurrentUser", gson.toJson(currentUser));
         e.putBoolean("UpdateAutomatically", autoUpload.isChecked());
         e.putBoolean("Saved", saved);
@@ -307,14 +282,19 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
     }
 
 
+    /**
+     * Load data from SharedPreferences
+     */
     private void getData(){
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         radioGroup.check(sp.getInt("Personal/Anonymous", 1));
         numDownloads = sp.getInt("NumDownloads", 0);
         date = sp.getString("Date", "");
         Gson gson = new Gson();
-        //String objList = sp.getString("UserListType", "");
         currentUser = gson.fromJson(sp.getString("CurrentUser", ""), User.class);
+        if (currentUser == null){
+            currentUser = new User();
+        }
         Type listOfTestObject = new TypeToken<ArrayList<User>>(){}.getType();
         Type typeIntArrayList = new TypeToken<ArrayList<Integer>>(){}.getType();
         Type typeStringArrayList = new TypeToken<ArrayList<String>>(){}.getType();
@@ -323,12 +303,6 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
         viewsSoFar = gson.fromJson(sp.getString("ViewsSoFar", ""), typeIntArrayList);
         likesSoFar = gson.fromJson(sp.getString("LikesSoFar", ""), typeIntArrayList);
         t = new TipSorter(this, tipsSoFar, extendedTipsSoFar, likesSoFar, viewsSoFar);
-
-      /*  if(!(objList == "")){
-            Type listOfTestObject = gson.fromJson(objList, Type.class);
-            users = gson.fromJson(sp.getString("UpdateAutomatically", ""), listOfTestObject);
-        }*/
-
 
          String usersString = sp.getString("Users", "");
         if (!(usersString.equals(""))){
@@ -342,13 +316,18 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
         for (User user: users){
             usernames.add(user.getUsername());
         }
-
         autoUpload.setChecked(sp.getBoolean("UpdateAutomatically", false));
 
     }
 
+
+
+
+
+
+
+    // When you click "Download Results," it downloads data as a csv.
     private void downloadData(){
-        // When you click "Download Results," it downloads data as a csv.
         saved = true;
         verifyStoragePermissions(this);
         downloadMessage(t.newFile(versionNum())); //<-- Add TipSorter
@@ -359,7 +338,7 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
 
     // Checks if the app has permission to write to device storage
     // If the app does not have permission then the user will be prompted to grant permissions
-    public static void verifyStoragePermissions(Activity activity) {
+    private static void verifyStoragePermissions(Activity activity) {
         // Check if we have file reading/writing permissions already
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -372,6 +351,7 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
             );
         }
     }
+
 
 
 
@@ -401,7 +381,7 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
     //Figures out the version number which will appear in the filename of any downloaded file.
     //The version number is "" if it is the first time today a file has been downloaded.  Otherwise,
     //the version number is "_1", "_2", "_3" etc.
-    String versionNum() {
+    private String versionNum() {
         Calendar cal = Calendar.getInstance();
         DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         String newDate = dateFormat.format(cal.getTime());
@@ -456,7 +436,7 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
     private void clearData() {
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
-        sp.edit().clear().apply(); //This feels problematic!  Just
+        sp.edit().clear().apply();
         tipsSoFar = new ArrayList<String>();
         extendedTipsSoFar= new ArrayList<String>();
         likesSoFar = new ArrayList<Integer>();
@@ -474,7 +454,7 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
 
     //Brings up a popup with the tips (sorted by popularity).  There are three buttons: two to
     //navigate through the tips, and one to close the popup.
-    void goodTipsPopUp(TipSorter tipSorter) {
+    private void goodTipsPopUp(TipSorter tipSorter) {
         //Create popup
         alert = new android.support.v7.app.AlertDialog.Builder(this).create();
         t = tipSorter;
@@ -531,25 +511,15 @@ public class Settings extends BaseActivity implements View.OnClickListener, Adap
 
 
     //Return the current group (the current set of 10 tips being viewed).
-    public int getGroup(){
+    private int getGroup(){
         return group;
     }
 
 
 
     //Change "group" by a certain amount.
-    public void incrementGroup(int num){
+    private void incrementGroup(int num){
         group += num;
     }
 
-
-
-
-
-
 }
-
-
-
-
-

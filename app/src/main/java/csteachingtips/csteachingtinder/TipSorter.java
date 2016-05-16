@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Date;
 
 
+
+
 public class TipSorter {
     Context context;
     ArrayList<String> tips;
@@ -23,7 +25,9 @@ public class TipSorter {
     TipSorter activity;
 
 
-    //Save the three data storage ArrayLists.
+
+
+    //Create the  data storage ArrayLists.
     public TipSorter(Context context, ArrayList<String> tips, ArrayList<String> extendedTips, ArrayList<Integer> likes, ArrayList<Integer> views) {
         this.context = context;
         this.tips = tips;
@@ -34,9 +38,6 @@ public class TipSorter {
         makeTipList();
         activity = this;
     }
-
-
-
 
 
 
@@ -55,35 +56,12 @@ public class TipSorter {
                 Tip tip = sortedTips[i];
                 String tipText =  tip.getTitle() + "," + tip.getDescription();
                 //Take out all weird characters (e.g. smart quotes) b/c they show up wrong in Excel
-                tipText = tipText.replaceAll("[\\u2018\\u2019\\u201b\\u2032]", "'")
-                        .replaceAll("[\\u201C\\u201D\\u201e\\u2033]", "\"")
-                        .replaceAll("[\\u2013\\u2014\\u2015]", "-")
-                        .replaceAll("[\\u2017]", "_")
-                        .replaceAll("[\\u2026]", "...")
-                        .replaceAll("[\\u201a]", ",")
-                        .replace("\\u003C", "<")
-                        .replace("\\u003E", ">")
-                ;
-
-
+                tipText = formatString(tipText);
                 //Add quotes at beginning and end, and make quotes within tips double up ("").
                 tipText = "\"" + tipText.replace("\"", "\"\"") + "\"";
-
-
-
-                String tipLong = tip.getLong().replaceAll("[\\u2018\\u2019\\u201b\\u2032]", "'")
-                        .replaceAll("[\\u201C\\u201D\\u201e\\u2033]", "\"")
-                        .replaceAll("[\\u2013\\u2014\\u2015]", "-")
-                        .replaceAll("[\\u2017]", "_")
-                        .replaceAll("[\\u2026]", "...")
-                        .replaceAll("[\\u201a]", ",")
-                        .replace("\\u003C", "<")
-                        .replace("\\u003E", ">")
-                        ;
-
+                String tipLong = formatString(tip.getLong());
                 //Add quotes at beginning and end, and make quotes within tips double up ("").
                 tipLong = "\"" + tipLong.replace("\"", "\"\"") + "\"";
-
                 int likes = tip.getLikes();
                 int views = tip.getViews();
                 myInputText = myInputText + tipText + "," + tipLong + "," + likes + "," + views + "\n";
@@ -100,16 +78,32 @@ public class TipSorter {
 
 
 
+    //Replace characters which don't show up right.
+    private String formatString(String str){
+        return str.replaceAll("[\\u2018\\u2019\\u201b\\u2032]", "'")
+                .replaceAll("[\\u201C\\u201D\\u201e\\u2033]", "\"")
+                .replaceAll("[\\u2013\\u2014\\u2015]", "-")
+                .replaceAll("[\\u2017]", "_")
+                .replaceAll("[\\u2026]", "...")
+                .replaceAll("[\\u201a]", ",")
+                .replace("\\u003C", "<")
+                .replace("\\u003E", ">")
+                ;
+    }
+
+
+
 
 
     //Make an array of Tips.  Sort the tips.  The tips with the greatest likes/views ratios are first.
     //When there's a tie, the tip with more views wins.
-    public void makeTipList() {
+    private void makeTipList() {
         for (int i = 0; i < tips.size(); i++) {
             sortedTips[i] = new Tip(tips.get(i), extendedTips.get(i), likes.get(i), views.get(i));
         }
         Arrays.sort(sortedTips);
     }
+
 
 
 
@@ -119,13 +113,7 @@ public class TipSorter {
         if (sortedTips.length==0){
             str = "Sorry, it looks like you don't have any tips saved. \n\n After you like some tips, they will appear here.\n\n\n";
         } else {
-            System.out.print("FIRST: ");
-            System.out.println(sortedTips[0]);
-            System.out.print("LAST: ");
-            System.out.print(sortedTips[sortedTips.length - 1]);
-
             int start = 5 * set;
-
             for (int i = start; i < Math.min(5 + start, sortedTips.length); i++) {
                 str = str + "Tip #" + (i + 1) + ": " + sortedTips[i] + "\n\n";
             }
@@ -134,8 +122,3 @@ public class TipSorter {
     }
 
 }
-
-
-
-
-

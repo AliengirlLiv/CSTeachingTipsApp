@@ -2,18 +2,11 @@ package csteachingtips.csteachingtinder;
 
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
@@ -29,7 +22,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -50,13 +42,9 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
     //of time, or even get rid of tipsSoFar all together if we can update to the site in real time.
     ArrayList<String> extendedTipsSoFar;
     int tipsLeft = 5;
-
+    int nextCol = 0;
 
     static final String randomTipUrl = "http://csteachingtips.org/random-tip";
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     private GoogleApiClient client;
     static boolean ready = true;
     private User currentUser;
@@ -71,18 +59,16 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("COLORS: " + Color.parseColor("#AEC1E8") + " - " + Color.parseColor("#8A99B8"));
         setStuffUp();
     }
 
-    public void setStuffUp() {
+    private void setStuffUp() {
 
         setContentView(R.layout.activity_main);
 
-        //Create an action bar with our logo
-
-
         //Create and display new user
-        User anonymousUser = new User(true);
+        User anonymousUser = new User();
         users = new ArrayList<User>();
         users.add(anonymousUser);
         currentUser = anonymousUser;
@@ -100,36 +86,26 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
         viewsSoFar = new ArrayList<Integer>();
         likesSoFar = new ArrayList<Integer>();
 
-
+        //MainActivity is the only screen that doesn't need a home button.
         getActionbar().setDisplayHomeAsUpEnabled(false);
 
-        //!//
-       /* Intent myIntent = getIntent();
-        System.out.println("INTENT: " + myIntent);
-        adapter = (TipStackAdapter) myIntent.getSerializableExtra("ADAPTER");
-        if (adapter == null){
-            adapter = new TipStackAdapter(this);
-        }*/
+        activity = this;
+        adapter = new TipStackAdapter(this);
+        tipContainer = (CardPile) findViewById(R.id.tips);
+        webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
 
 
-
-
-
-
-
-
-
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-
-
+        /**
+         * This gets called after the new randomTip is loaded
+         */
         final ValueCallback v = new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String jsonTip) {
-                System.out.print("JSON TIP!!!!!!!!!!!");
+                //If there's no tip, it means we're probably not connected to the internet.
                 if (jsonTip.equals("null")) {
-                    new AlertDialog.Builder(MainActivity.this).setMessage("Couldn't load tip.  Are you connected to the internet?").setNeutralButton("Close", null).show();
+                    new AlertDialog.Builder(MainActivity.this).setMessage("Couldn't load tip.  Are you connected to the internet?")
+                             .setNeutralButton("Close", null).show();
                     Button b = (Button) findViewById(R.id.check_connection);
                     b.setVisibility(View.VISIBLE);
                     b.setOnClickListener(new View.OnClickListener() {
@@ -143,86 +119,67 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
                     return;
                 }
                 int index = jsonTip.indexOf("\\n\\n");
-                System.out.println(index);
-                String title = jsonTip.substring(0, index);
+                String title = jsonTip.substring(1, index);
                 String description = jsonTip.substring(index + 4);
-                Tip newTip = new Tip(removeQuotes(title, 1), removeQuotes(description, 0), activity);
+                Tip newTip = new Tip(title, removeQuotes(description, 1), activity, getColor());
                 adapter.add(newTip);
                 tipContainer.setAdapter(adapter);
-                System.out.print("ADAPTER: ");
-                System.out.println(adapter.getCount());
                 if (adapter.getCount() < numTips) {
-                    System.out.println("TOO FEW METHOD CALLED");
-                    webView.reload(); //Probably problems
+                    webView.reload();
                 }
             }
         };
 
 
-        activity = this;
-        adapter = new TipStackAdapter(this);
-/**
-        for(int i = 0; i < numTips; i++){
-            Tip newTip = tipGetter.getNewTip();////WHAT???
-            adapter.add(newTip);
-            System.out.println("Worked okay at least once");
-        }
-*/
-
-
-        tipContainer = (CardPile) findViewById(R.id.tips);
-        webView = new WebView(this);
-        webView.getSettings().setJavaScriptEnabled(true);
-
-
-
+        /**
+         * When the page is finished, get a tip and the extended tip from the website.
+         */
         WebViewClient wvc = new WebViewClient() {
 
             @Override
             public void onPageFinished(final WebView myView, String url) {
 
-                System.out.println("PAGE FINISHED METHOD CALLED");
-
-
                 myView.evaluateJavascript(
                         "var div = document.createElement('div');"
                                 + "div.innerHTML = (document.getElementsByClassName('tip-title')[0].innerHTML).concat('\\n\\n').concat(document.getElementsByClassName('field-item even')[0].innerHTML);"
-                                + "div.textContent.trim() || div.innerText.trim() || '';",v); //On the line above, if there isn't any body, it gets the 1st tag instead
+                                + "div.textContent.trim() || div.innerText.trim() || '';", v); //On the line above, if there isn't any body, it gets the 1st tag instead
 
                 ready = true;
             }
         };
         webView.setWebViewClient(wvc);
 
-
-
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        //for (int i = 0; i < 5; i++) {
-            loadTips();
-        //}
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        loadTips();
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 
+    /**
+     * Add tip created by the TipGetter class.
+     * (This won't be called, since the TipGetter class is never called.
+     * @param tip - the tip created by the TipGetter class
+     */
+    public void addTip(Tip tip){
+        adapter.add(tip);
+        tipContainer.setAdapter(adapter);
+    }
 
 
-    //Grab five tips from website, display them
-    void loadTips() {
-        System.out.println("LOAD TIPS METHOD CALLED");
+    /**
+     * Grab tips from website, display them
+     */
+    private void loadTips() {
         webView.loadUrl(randomTipUrl);
     }
 
 
 
-    //Take the quotes off of the start and end of each tip.
-    public String removeQuotes(String jsonString, int x) {
+
+
+    /**
+     * Take the quotes off of the start and end of each tip.
+     */
+    private String removeQuotes(String jsonString, int x) {
         jsonString = fixSpecialCharacters(jsonString);
         return jsonString.substring(x, jsonString.length() - 1 + x);
     }
@@ -231,7 +188,6 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
 
     //Change weird symbols which don't show up properly in normal text.
     private String fixSpecialCharacters(String s) {
-        System.out.println(s);
         return s.replace("\\u003C", "<")
                 .replace("\\u003E", ">")
                 .replace("\\\"", "\"")
@@ -239,15 +195,8 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
                 .replace("\\\\", "\\") //Make sure this doesn't happen multiple times
                 .replace("\\n", "\n")
                 .replace("\\t", "\t")
-                .replace("\\u009B", ""); //This line appeared in the tip which begins: SciGirls Seven tip: “Girls benefit from relationships with role models and mentors.”
-// \u2022 = buller point
+                .replace("\\u009B", "");
     }
-
-
-
-
-
-
 
 
 
@@ -256,32 +205,32 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
 
     //We save the data on the tips viewed so far (and other important data) in SharedPreferences
     // whenever we navigate away from the app or close it.
-    public boolean saveData() {
+    private boolean saveData() {
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
         Gson gson = new Gson();
 
         Type typeIntArrayList = new TypeToken<ArrayList<Integer>>(){}.getType();
         Type typeStringArrayList = new TypeToken<ArrayList<String>>(){}.getType();
-        //:( Type typeAdapter = new TypeToken<TipStackAdapter>(){}.getType();
 
         e.putString("TipsSoFar", gson.toJson(tipsSoFar, typeStringArrayList));
         e.putString("ExtendedTipsSoFar", gson.toJson(extendedTipsSoFar, typeStringArrayList));
         e.putString("LikesSoFar", gson.toJson(likesSoFar, typeIntArrayList));
         e.putString("ViewsSoFar", gson.toJson(viewsSoFar, typeIntArrayList));
         e.putBoolean("Saved", saved);
-        //:(e.putString("Adapter", gson.toJson(adapter, typeAdapter));
 
 
+        for (int i = 0; i < Math.max(adapter.getCount(), numTips); i++){
+            e.remove("ActiveTip" + i);
+            e.remove("ActiveETip" + i);
+            e.remove("ActiveLikes" + i);
+            e.remove("ActiveViews" + i);
+        }
         for (int i = 0; i < adapter.getCount(); i++) {
             Tip currTip = adapter.getCurrTip();
-            e.remove("ActiveTip" + i);
             e.putString("ActiveTip" + i, currTip.getTitle());
-            e.remove("ActiveETip" + i);
             e.putString("ActiveETip" + i, currTip.getDescription());
-            e.remove("ActiveLikes" + i);
             e.putInt("ActiveLikes" + i, currTip.getLikes());
-            e.remove("ActiveViews" + i);
             e.putInt("ActiveViews" + i, currTip.getViews());
             adapter.pop();
         }
@@ -291,7 +240,7 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
 
 
     //When we start or come back to the app, reload the saved data.
-    public void loadData()
+    private void loadData()
     {
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         saved = sp.getBoolean("Saved", true);
@@ -301,7 +250,7 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
         Type typeIntArrayList = new TypeToken<ArrayList<Integer>>(){}.getType();
         Type typeStringArrayList = new TypeToken<ArrayList<String>>(){}.getType();
 
-        currentUser = gson.fromJson(sp.getString("CurrentUser", "Anonymous/Conference Mode"), User.class);
+        currentUser = gson.fromJson(sp.getString("CurrentUser", gson.toJson(new User(), User.class)), User.class);
         loggedIn.setText(currentUser.getUsername());
         tipsSoFar = gson.fromJson(sp.getString("TipsSoFar", "[]"), typeStringArrayList);
         if (tipsSoFar == null){
@@ -324,13 +273,11 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
                 String description = sp.getString("ActiveETip" + i, null);
                 int likes = sp.getInt("ActiveLikes" + i, 0);
                 int views = sp.getInt("ActiveViews" + i,0);
-                Tip newTip = new Tip(active, description, likes, views);
-                System.out.println("Added a tip from sharedpreferences.");
-                System.out.println(active);
+                Tip newTip = new Tip(active, description, likes, views, getColor());
                 adapter.add(newTip); //Maybe reload webview after one?  After all of them?
             }
         }
-
+        tipContainer.setAdapter(adapter);
 
     }
 
@@ -344,8 +291,6 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
     @Override
     public void onClick(View v) {
         showAboutPopUp();
-        adapter.print();
-        //!//printTips();
     }
 
 
@@ -376,13 +321,8 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
 
 
 
-
-
-
-
-
     //Find and return the index of a certain tip
-    int findTip(String text) {
+    private int findTip(String text) {
         //Loop through previously created tips, see if this tip is already there.
         for (int i = 0; i < tipsSoFar.size(); i++) {
             if (text.equals(tipsSoFar.get(i))) {
@@ -394,8 +334,11 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
     }
 
 
+
+
+
     //Stores the view and (possibly) like of the current tip in the 3 data storage ArrayLists.
-    void recordTip(Tip currTip, int like) {
+    private void recordTip(Tip currTip, int like) {
         String body = currTip.getDescription();
         String title = currTip.getTitle();
         int tipIndex = findTip(title);
@@ -411,56 +354,44 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
     }
 
 
+    /**
+     * PROBLEMS with OnLike and OnDislike!!!
+     * If the user swipes too fast, tips start getting repeated,
+     * and in the extreme case where all the tips run out, the app crashes.
+     */
 
 
-    @Override
-    public void onLike() {
-        recordTip(adapter.getCurrTip(), 0);
-        adapter.pop();
-        //webView.loadUrl(randomTipUrl);
-        tipsLeft--;
-        saved = false;
-        checkNum(); //Take this out later.
-    }
 
 
+    /**
+     * This is called when the user swipes RIGHT.
+     * (Yeah, I know it's backwards of how I'd expect it to work).
+     */
     @Override
     public void onDislike() {
-        recordTip(adapter.getCurrTip(), 1);
+        recordTip(adapter.getCurrTip(), 0);
         adapter.pop();
-        //webView.loadUrl(randomTipUrl);
         tipsLeft--;
         saved = false;
-        checkNum(); //Take this out later.
-    }
-
-
-
-    void checkNum() { //Take this out later; it's good for debugging since it says how many tips are (or should be) left.
-        System.out.print("Tips Left:");
-        System.out.println(tipsLeft);
-        System.out.println("CHECK NUM METHOD CALLED");
         loadTips();
-        if (tipsLeft == 0) {
-            System.out.println("Out of tips!");
-            //loadTips(); //Important!
-            tipsLeft = 5;
-        }
     }
 
 
 
 
 
-
-
-
-
-
-
-
-
-
+    /**
+     * This is called when the user swipes LEFT.
+     */
+    @Override
+    public void onLike() {
+        recordTip(adapter.getCurrTip(), 1);
+        adapter.pop();
+        tipsLeft--;
+        saved = false;
+        System.out.println("Boo :(");
+        loadTips();
+    }
 
 
 
@@ -530,19 +461,32 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
     }
 
 
-    //Called whenever the screen orientation changes
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-   }
+    /**
+     * Get tip color
+     * @return int[] containing a pair of colors: one light and one dark, to be used in the tip
+     */
+    public int[] getColor(){
+        int blue = Color.parseColor("#AEC1E8");
+        int teal = Color.parseColor("#AEE8E8");
+        int green = Color.parseColor("#D4FADD");
+        int blueDark = Color.parseColor("#8A99B8");
+        int tealDark = Color.parseColor("#88B3B3");
+        int greenDark = Color.parseColor("#A3C4AB");
+        int[] colors = {green, teal, blue};
+        int[] darkColors = {greenDark, tealDark, blueDark};
+        int[] result = {colors[nextCol], darkColors[nextCol]};
+        nextCol = (nextCol+1)%3;
+        System.out.println("NEXT COLOR: " + nextCol);
+        return result;
 
+    }
 
 
 
 
 
     //Get rid of this later; this is just helpful for now in to see what elements tipsSoFar holds.
-    void printTips() {
+    private void printTips() {
         System.out.println("TIPS SO FAR IS " + tipsSoFar);
         for (int i = 0; i < tipsSoFar.size(); i++) {
             System.out.print(tipsSoFar.get(i));
@@ -554,8 +498,5 @@ public class MainActivity extends BaseActivity implements CardModel.OnCardDimiss
         }
     }
 
-
-
-
-
 }
+
